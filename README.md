@@ -1,116 +1,66 @@
-# Sistema de Gerenciamento de Clientes e Veículos — POO
+# Sistema de Gerenciamento de Clientes e Veículos
 
-> **Projeto Acadêmico de Programação Orientada a Objetos**  
-> **Linguagem:** Java (v17+)  
-> **Docente:** Prof.ª Ana Emília  
-> **Repositório:** [JOAO2666/Sistema-de-Gerenciamento-de-Clientes-e-Ve-culos-POO](https://github.com/JOAO2666/Sistema-de-Gerenciamento-de-Clientes-e-Ve-culos-POO)
+Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos**, com o objetivo de aplicar na prática os principais conceitos estudados em sala de aula utilizando a linguagem Java.
 
----
-
-## 📌 Sobre o Projeto
-
-O **Sistema de Gerenciamento de Clientes e Veículos** é uma aplicação completa em Java projetada para demonstrar na prática todos os pilares e boas práticas da **Programação Orientada a Objetos (POO)**. 
-
-O sistema substitui abordagens monolíticas/estruturadas por uma arquitetura em camadas (**MVC**), com persistência em arquivos de texto plano (CSV), integridade relacional, tratamento defensivo de erros e polimorfismo dinâmico.
+**Linguagem:** Java  
+**Disciplina:** Programação Orientada a Objetos  
+**Professora:** Ana Emília  
 
 ---
 
-## 🎯 Pilares de POO Demonstrados
+## Sobre o projeto
 
-1. **Encapsulamento:**
-   - Todos os atributos de todas as entidades de domínio possuem visibilidade `private`.
-   - Acesso e mutação são intermediados por métodos `get` e `set` com validações de consistência (ex: restrição contra nomes nulos ou valores negativos).
+O projeto consiste em um sistema de gerenciamento de clientes e veículos.
 
-2. **Herança (Relação É-UM):**
-   - `Cliente extends Pessoa`: Especialização da entidade Pessoa com reutilização de construtores através da instrução `super(...)`.
-   - `Carro extends Veiculo` e `Moto extends Veiculo`: Especialização da entidade genérica de transporte.
+A proposta inicial é permitir o cadastro, consulta, alteração e exclusão de clientes, além do cadastro e associação de veículos a esses clientes.
 
-3. **Abstração:**
-   - Classes base declaradas como `abstract` (`Pessoa` e `Veiculo`), garantindo que apenas especializações concretas sejam instanciadas.
-   - Assinatura de métodos abstratos (`exibirResumo()`, `exibirDetalhes()`, `getTipo()`, `toCsv()`).
+Durante o desenvolvimento, o projeto também será utilizado para aplicar conceitos de Programação Orientada a Objetos, como:
 
-4. **Polimorfismo (Inclusão / Subtipo):**
-   - Métodos abstratos da superclasse são sobrescritos com a anotação `@Override` em `Carro` e `Moto`.
-   - O controlador manipula coleções genéricas `List<Veiculo>`, executando dinamicamente em tempo de execução o comportamento específico de cada subclasse.
+- encapsulamento;
+- herança;
+- abstração;
+- polimorfismo;
+- associação entre objetos;
+- organização em classes;
+- separação de responsabilidades.
 
-5. **Associação e Integridade Relacional:**
-   - Cada veículo está associado a um cliente via `clienteId`.
-   - O sistema impede a criação de veículos para clientes inexistentes e oferece suporte à exclusão em cascata.
+A estrutura do projeto foi criada antes da implementação completa para que cada integrante do grupo possa desenvolver sua parte separadamente.
 
 ---
 
-## 👥 Divisão de Responsabilidades da Equipe
+## Funcionalidades previstas
 
-| Integrante | Responsabilidade no Projeto | Módulos Desenvolvidos |
-| :--- | :--- | :--- |
-| **João** | Integração, Arquitetura MVC, Controller e Git | `Main.java`, `ApplicationController.java`, Git Setup |
-| **Ícaro** | Domínio Base, Herança e Encapsulamento | `Pessoa.java`, `Cliente.java` |
-| **Alexandre** | Abstração de Veículos e Especialização Carro | `Veiculo.java`, `Carro.java` |
-| **Hícaro** | Especialização Moto e Polimorfismo | `Moto.java`, Coleções polimórficas |
-| **Natanael** | Persistência em Arquivos, Documentação e Testes | `ClienteRepository.java`, `VeiculoRepository.java`, `IdGenerator.java`, `docs/`, `test/` |
+As principais funcionalidades previstas para o sistema são:
 
----
+- cadastrar clientes;
+- listar clientes;
+- alterar dados de clientes;
+- remover clientes;
+- cadastrar veículos;
+- associar veículos a clientes;
+- listar veículos de um cliente;
+- armazenar os dados em arquivos;
+- validar dados informados pelo usuário.
 
-## 🗂️ Estrutura de Diretórios
-
-```text
-projeto-poo-clientes-veiculos/
-├── README.md                  # Documentação principal do projeto
-├── .gitignore                 # Arquivos ignorados pelo Git
-├── docs/                      # Documentação de Engenharia de Software
-│   ├── requisitos.md          # Requisitos Funcionais e Não-Funcionais
-│   ├── planejamento.md        # Planejamento da equipe e fluxo de branches
-│   └── uml.md                 # Diagramas de Classes e Sequência (Mermaid)
-├── src/                       # Código-fonte da aplicação
-│   ├── Main.java              # Ponto de entrada (Entrypoint)
-│   ├── model/                 # Entidades e regras de domínio (POO)
-│   │   ├── Pessoa.java        # Superclasse abstrata
-│   │   ├── Cliente.java       # Subclasse concreta
-│   │   ├── Veiculo.java       # Superclasse abstrata de veículos
-│   │   ├── Carro.java         # Subclasse de veículo
-│   │   └── Moto.java          # Subclasse de veículo
-│   ├── repository/            # Camada de persistência em arquivos
-│   │   ├── IdGenerator.java   # Controle de IDs sequenciais
-│   │   ├── ClienteRepository.java # Operações CRUD de clientes
-│   │   └── VeiculoRepository.java # Operações CRUD polimórficas
-│   ├── view/                  # Camada de apresentação e interface
-│   │   ├── Menu.java          # Menus e formatação de texto
-│   │   └── Input.java         # Tratamento de entradas do usuário
-│   └── controller/            # Camada controladora (Orquestração MVC)
-│       └── ApplicationController.java
-├── test/                      # Testes automatizados
-│   └── TestePOO.java          # Suíte de testes de validação dos pilares
-└── data/                      # Diretório de armazenamento dos arquivos .txt
-    └── .gitkeep
-```
+Outras funcionalidades poderão ser adicionadas conforme os conteúdos forem avançando durante a disciplina.
 
 ---
 
-## 🚀 Como Compilar e Executar
+## Conceitos de POO
 
-### Pré-requisitos
-- **Java JDK** versão 17 ou superior instalado (ex: OpenJDK / Temurin / Oracle JDK).
+### Encapsulamento
 
-### 1. Compilação
-No terminal (PowerShell, CMD ou Bash), na raiz do projeto:
+Os atributos das classes serão mantidos com acesso controlado, utilizando principalmente atributos privados e métodos de acesso quando necessário.
 
-```bash
-javac -d bin -sourcepath src src/Main.java src/model/*.java src/repository/*.java src/view/*.java src/controller/*.java test/TestePOO.java
-```
+Exemplo:
 
-### 2. Execução da Aplicação Principal
-```bash
-java -cp bin Main
-```
+```java
+private String nome;
 
-### 3. Execução dos Testes Automatizados de POO
-```bash
-java -cp bin test.TestePOO
-```
+public String getNome() {
+    return nome;
+}
 
----
-
-## 📊 Documentação Técnica
-- [Especificação de Requisitos](docs/requisitos.md)
-- [Planejamento de Branches e Git Flow](docs/planejamento.md)
-- [Diagramas de Classes e Sequência UML](docs/uml.md)
+public void setNome(String nome) {
+    this.nome = nome;
+}
