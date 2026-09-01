@@ -1,0 +1,20 @@
+# Arquivos compilados do Java
+*.class
+bin/
+out/
+target/
+build/
+
+# IDEs e Editores
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Arquivos de dados de execução local (os contadores e registros podem ser mantidos ou ignorados conforme preferência)
+# data/*.tmp
+*.log
+.DS_Store
+Thumbs.db
