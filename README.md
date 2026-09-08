@@ -64,9 +64,3 @@ public String getNome() {
 public void setNome(String nome) {
     this.nome = nome;
 }
-
-## Alterações incorporadas do Pull Request #1
-
-As classes `Pessoa` e `Cliente` foram implementadas a partir do commit do
-colaborador Ícaro Rafael. O detalhamento completo das alterações está em
-[`docs/alteracoes-pr-1.md`](docs/alteracoes-pr-1.md).
