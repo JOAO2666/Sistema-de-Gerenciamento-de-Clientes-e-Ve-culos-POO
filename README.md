@@ -81,7 +81,7 @@ src/
 ### Encapsulamento
  Todos os atributos são privados (`private`), acessados e modificados via getters e setters com validação de consistência.
 
-### 5. Tratamento de Exceções Personalizadas
+### Tratamento de Exceções Personalizadas
  `ApoliceVencidaException`: Lançada ao tentar acionar sinistro em apólice expirada.
  `ValorPremioInvalidoException`: Lançada quando o cálculo ou valor contratual é nulo ou negativo.
  `ClienteNaoEncontradoException`: Lançada ao buscar por IDs ou documentos inexistentes.
