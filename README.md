@@ -65,48 +65,47 @@ src/
 ## Conceitos de POO Aplicados
 
 ###  Classes Abstratas
-- **`Cliente`**: Define atributos essenciais e métodos abstratos (`getDocumentoPrincipal()`, `getTipoCliente()`, `exibirResumo()`) implementados pelas subclasses `PessoaFisica` e `PessoaJuridica`.
-- **`Apolice`**: Define atributos comuns e o método abstrato `calcularPremioBase()`, `getTipoApolice()` e `exibirDetalhesApolice()`. Não pode ser instanciada diretamente.
+ **`Cliente`**: Define atributos essenciais e métodos abstratos (`getDocumentoPrincipal()`, `getTipoCliente()`, `exibirResumo()`) implementados pelas subclasses `PessoaFisica` e `PessoaJuridica`.
+ **`Apolice`**: Define atributos comuns e o método abstrato `calcularPremioBase()`, `getTipoApolice()` e `exibirDetalhesApolice()`. Não pode ser instanciada diretamente.
 
 ### Interfaces
-- **`Identificavel`**: Padroniza o acesso a IDs (`getId()`, `setId(int)`).
-- **`Seguravel`**: Define os métodos `getValorAvaliado()`, `getIdentificador()` e `getDescricaoCompleta()` para bens que podem ter apólice (`Veiculo`, `Imovel`).
-- **`DAO<T>`**: Interface genérica para desacoplar a camada de persistência com métodos CRUD.
-- **`ICalculadoraDePremio`** e **`IValidadorDeProposta`**: Interfaces de serviços para inversão de dependência (SOLID).
+ **`Identificavel`**: Padroniza o acesso a IDs (`getId()`, `setId(int)`).
+ **`Seguravel`**: Define os métodos `getValorAvaliado()`, `getIdentificador()` e `getDescricaoCompleta()` para bens que podem ter apólice (`Veiculo`, `Imovel`).
+ **`DAO<T>`**: Interface genérica para desacoplar a camada de persistência com métodos CRUD.
+ **`ICalculadoraDePremio`** e **`IValidadorDeProposta`**: Interfaces de serviços para inversão de dependência (SOLID).
 
 ### Polimorfismo
-- O cálculo do prêmio na `CalculadoraDePremioService` invoca `apolice.calcularPremioBase()`, que executa regras diferentes em tempo de execução para **`ApoliceAuto`**, **`ApoliceResidencial`** ou **`ApoliceDeVida`**.
-- O repositório `ApoliceDAO` e o `ClienteDAO` tratam coleções de tipos genéricos e subclasses polimorficamente.
+ O cálculo do prêmio na `CalculadoraDePremioService` invoca `apolice.calcularPremioBase()`, que executa regras diferentes em tempo de execução para **`ApoliceAuto`**, **`ApoliceResidencial`** ou **`ApoliceDeVida`**.
+ O repositório `ApoliceDAO` e o `ClienteDAO` tratam coleções de tipos genéricos e subclasses polimorficamente.
 
 ### Encapsulamento
-- Todos os atributos são privados (`private`), acessados e modificados via getters e setters com validação de consistência.
+ Todos os atributos são privados (`private`), acessados e modificados via getters e setters com validação de consistência.
 
 ### 5. Tratamento de Exceções Personalizadas
-- `ApoliceVencidaException`: Lançada ao tentar acionar sinistro em apólice expirada.
-- `ValorPremioInvalidoException`: Lançada quando o cálculo ou valor contratual é nulo ou negativo.
-- `ClienteNaoEncontradoException`: Lançada ao buscar por IDs ou documentos inexistentes.
-- `SinistroJaRegistradoException`: Lançada ao tentar registrar evento duplicado para a mesma apólice e data.
+ `ApoliceVencidaException`: Lançada ao tentar acionar sinistro em apólice expirada.
+ `ValorPremioInvalidoException`: Lançada quando o cálculo ou valor contratual é nulo ou negativo.
+ `ClienteNaoEncontradoException`: Lançada ao buscar por IDs ou documentos inexistentes.
+ `SinistroJaRegistradoException`: Lançada ao tentar registrar evento duplicado para a mesma apólice e data.
 
 ---
 
 ## Como Compilar e Executar
 
 ### Pré-requisitos
-- Java JDK 11 ou superior instalado
+ Java JDK 11 ou superior instalado
 
 ### Compilação e Execução via Terminal
 
-1. **Compilar o projeto**:
+ **Compilar o projeto**:
    ```bash
    javac -encoding UTF-8 -d bin (Get-ChildItem -Path src, test -Filter *.java -Recurse | Select-Object -ExpandProperty FullName)
    ```
 
-2. **Executar a aplicação interativa**:
+ **Executar a aplicação interativa**:
    ```bash
    java -cp bin Main
    ```
-
-3. **Executar a suíte de testes automatizados**:
+  **Executar a suíte de testes automatizados**:
    ```bash
    java -cp bin TestePOO
    ```
