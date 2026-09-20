@@ -4,7 +4,7 @@ Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos (P
 
 ---
 
-## 🏛️ Arquitetura do Sistema
+## Arquitetura do Sistema
 
 O projeto está estruturado em pacotes seguindo a separação de responsabilidades:
 
@@ -62,23 +62,23 @@ src/
 
 ---
 
-## 🎯 Conceitos de POO Aplicados
+## Conceitos de POO Aplicados
 
-### 1. Classes Abstratas
+###  Classes Abstratas
 - **`Cliente`**: Define atributos essenciais e métodos abstratos (`getDocumentoPrincipal()`, `getTipoCliente()`, `exibirResumo()`) implementados pelas subclasses `PessoaFisica` e `PessoaJuridica`.
 - **`Apolice`**: Define atributos comuns e o método abstrato `calcularPremioBase()`, `getTipoApolice()` e `exibirDetalhesApolice()`. Não pode ser instanciada diretamente.
 
-### 2. Interfaces
+### Interfaces
 - **`Identificavel`**: Padroniza o acesso a IDs (`getId()`, `setId(int)`).
 - **`Seguravel`**: Define os métodos `getValorAvaliado()`, `getIdentificador()` e `getDescricaoCompleta()` para bens que podem ter apólice (`Veiculo`, `Imovel`).
 - **`DAO<T>`**: Interface genérica para desacoplar a camada de persistência com métodos CRUD.
 - **`ICalculadoraDePremio`** e **`IValidadorDeProposta`**: Interfaces de serviços para inversão de dependência (SOLID).
 
-### 3. Polimorfismo
+### Polimorfismo
 - O cálculo do prêmio na `CalculadoraDePremioService` invoca `apolice.calcularPremioBase()`, que executa regras diferentes em tempo de execução para **`ApoliceAuto`**, **`ApoliceResidencial`** ou **`ApoliceDeVida`**.
 - O repositório `ApoliceDAO` e o `ClienteDAO` tratam coleções de tipos genéricos e subclasses polimorficamente.
 
-### 4. Encapsulamento
+### Encapsulamento
 - Todos os atributos são privados (`private`), acessados e modificados via getters e setters com validação de consistência.
 
 ### 5. Tratamento de Exceções Personalizadas
@@ -89,7 +89,7 @@ src/
 
 ---
 
-## 🚀 Como Compilar e Executar
+## Como Compilar e Executar
 
 ### Pré-requisitos
 - Java JDK 11 ou superior instalado
