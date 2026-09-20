@@ -1,90 +1,89 @@
-/*
- * Projeto: Sistema de Gerenciamento de Clientes e Veículos
- * Disciplina: Programação Orientada a Objetos
- * Arquivo: Cliente.java
- * Autor: Ícaro Rafael
- * Professor: Ana Emília de Melo Queiroz
- * Descrição: Classe que representa um cliente.
- */
-
 package model;
 
-// ----- Classe cliente herdando pessoa -----
-public class Cliente extends Pessoa {
-    // ----- Atributos -----
-    private String sexo;
+/**
+ * Classe Abstrata base que representa um Cliente do sistema de seguros.
+ * Implementa a interface Identificavel e define métodos abstratos para especializações.
+ */
+public abstract class Cliente implements Identificavel {
+    private int id;
+    private String nome;
     private String email;
+    private String telefone;
+    private String endereco;
 
-    // ----- Construtores -----
-    public Cliente(int id, String nome, String cpf, String telefone,
-                   String sexo, String email) {
+    public Cliente() {}
 
-        super(id, nome, cpf, telefone);
-
-        setSexo(sexo);
-        setEmail(email);
+    public Cliente(int id, String nome, String email, String telefone, String endereco) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+        this.endereco = endereco;
     }
 
-    // ----- Getters e Setters -----
-    public String getSexo() {
-        return this.sexo;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome não pode ser vazio.");
+        }
+        this.nome = nome.trim();
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    // ----- Exibe o resumo do cliente -----
-    @Override
-    public String exibirResumo() {
-        return "Cliente: " + getNome() +
-                " | CPF: " + getCpf() +
-                " | Telefone: " + getTelefone() +
-                " | Sexo: " + sexo +
-                " | Email: " + email;
+    public String getTelefone() {
+        return telefone;
     }
 
-    // ----- Transforma o cliente em CSV -----
-    public String toCsv() {
-        return getId() + ";" +
-                getNome() + ";" +
-                getCpf() + ";" +
-                getTelefone() + ";" +
-                sexo + ";" +
-                email;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
-    // ----- Cria um cliente através de um CSV -----
-    public Cliente fromCsv(String csvLine) {
-        String[] dados = csvLine.split(";");
-
-        return new Cliente(
-                Integer.parseInt(dados[0]),
-                dados[1],
-                dados[2],
-                dados[3],
-                dados[4],
-                dados[5]
-        );
+    public String getEndereco() {
+        return endereco;
     }
 
-    // ----- Representação textual do cliente -----
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    /**
+     * Retorna o documento principal do cliente (CPF para Pessoa Física, CNPJ para Pessoa Jurídica).
+     */
+    public abstract String getDocumentoPrincipal();
+
+    /**
+     * Retorna a descrição do tipo de cliente.
+     */
+    public abstract String getTipoCliente();
+
+    /**
+     * Exibe o resumo formatado dos dados do cliente.
+     */
+    public abstract String exibirResumo();
+
     @Override
     public String toString() {
-        return "Cliente: " +
-                "id=" + getId() +
-                ", nome='" + getNome() + '\'' +
-                ", cpf='" + getCpf() + '\'' +
-                ", telefone='" + getTelefone() + '\'' +
-                ", sexo='" + sexo + '\'' +
-                ", email='" + email + '\'';
+        return String.format("[%s] ID: %d | Nome: %s | Doc: %s | Tel: %s | Email: %s",
+                getTipoCliente(), id, nome, getDocumentoPrincipal(), telefone, email);
     }
 }

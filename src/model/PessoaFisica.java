@@ -1,87 +1,84 @@
-/*
- * Projeto: Sistema de Gerenciamento de Clientes e Veículos
- * Disciplina: Programação Orientada a Objetos
- * Arquivo: Pessoa.java
- * Autor: Ícaro Rafael
- * Professor: Ana Emília de Melo Queiroz
- * Descrição: Classe abstrata que representa uma pessoa.
- */
-
 package model;
 
-// ----- Classe abstrata de pessoa -----
-public abstract class Pessoa {
-    // ----- Atributos -----
-    private int id;
-    private String nome;
+import model.enums.EstadoCivil;
+
+/**
+ * Representa um cliente Pessoa Física. Herda de Cliente.
+ */
+public class PessoaFisica extends Cliente {
     private String cpf;
-    private String telefone;
+    private String rg;
+    private String dataNascimento;
+    private String sexo;
+    private EstadoCivil estadoCivil;
 
-    // ----- Construtores -----
-    public Pessoa(int id, String nome, String cpf, String telefone) {
-        this.id = id;
-        setNome(nome);
-        setCpf(cpf);
-        setTelefone(telefone);
+    public PessoaFisica() {
+        super();
     }
 
-    // ----- Getters e Setters -----
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return this.nome;
-    }
-
-    public void setNome(String nome) {
-        if (nome == null || nome.isBlank()) {
-            throw new IllegalArgumentException("Nome inválido");
-        }
-
-        this.nome = nome;
+    public PessoaFisica(int id, String nome, String email, String telefone, String endereco,
+                        String cpf, String rg, String dataNascimento, String sexo, EstadoCivil estadoCivil) {
+        super(id, nome, email, telefone, endereco);
+        this.cpf = cpf;
+        this.rg = rg;
+        this.dataNascimento = dataNascimento;
+        this.sexo = sexo;
+        this.estadoCivil = estadoCivil != null ? estadoCivil : EstadoCivil.SOLTEIRO;
     }
 
     public String getCpf() {
-        return this.cpf;
+        return cpf;
     }
 
     public void setCpf(String cpf) {
-        // atenção: cpfs necessitam de verificações mais complexas. Irei implementar depois.
-        if (cpf == null || cpf.isBlank()) {
-            throw new IllegalArgumentException("CPF inválido");
-        }
-
         this.cpf = cpf;
     }
 
-    public String getTelefone() {
-        return this.telefone;
+    public String getRg() {
+        return rg;
     }
 
-    public void setTelefone(String telefone) {
-        // Atenção: telefones necessitam de verificações mais complexas. Irei implementar depois.
-        if (telefone == null || telefone.isBlank()) {
-            throw new IllegalArgumentException("Telefone inválido");
-        }
-        this.telefone = telefone;
+    public void setRg(String rg) {
+        this.rg = rg;
     }
 
-    // ----- Método abstrato para a exibição do resumo da pessoa -----
-    public abstract String exibirResumo();
+    public String getDataNascimento() {
+        return dataNascimento;
+    }
 
-    // ----- Representação textual da pessoa -----
+    public void setDataNascimento(String dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public EstadoCivil getEstadoCivil() {
+        return estadoCivil;
+    }
+
+    public void setEstadoCivil(EstadoCivil estadoCivil) {
+        this.estadoCivil = estadoCivil;
+    }
+
     @Override
-    public String toString() {
-        return "Pessoa{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", telefone='" + telefone + '\'' +
-                '}';
+    public String getDocumentoPrincipal() {
+        return cpf;
+    }
+
+    @Override
+    public String getTipoCliente() {
+        return "Pessoa Física";
+    }
+
+    @Override
+    public String exibirResumo() {
+        return String.format("PF: %s (CPF: %s) | Nasc: %s | Sexo: %s | Estado Civil: %s | Contato: %s / %s",
+                getNome(), cpf, dataNascimento, sexo, estadoCivil.getDescricao(), getTelefone(), getEmail());
     }
 }

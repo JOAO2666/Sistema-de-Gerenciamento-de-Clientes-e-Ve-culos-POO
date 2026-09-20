@@ -1,0 +1,3 @@
+PF;1;Mariana;mariana@email.com;1197777;Rua D;333.444.555-66;RG-7766;12/12/1992;F;SOLTEIRO
+PF;2;Segurado Teste;teste@email.com;1198888;Rua E;444.555.666-77;RG-5544;01/01/1980;M;CASADO
+PF;3;Segurado Duplicidade;dup@email.com;1198888;Rua F;555.666.777-88;RG-6655;01/01/1985;M;CASADO

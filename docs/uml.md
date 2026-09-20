@@ -1,6 +1,6 @@
-# Diagramas UML do Sistema (POO)
+# Diagramas UML do Sistema de Seguros e Clientes (POO)
 
-Este documento contém os diagramas de modelagem orientada a objetos do sistema, renderizáveis diretamente pelo GitHub via sintaxe **Mermaid**.
+Este documento contém os diagramas de modelagem orientada a objetos atualizados do sistema, renderizáveis diretamente pelo GitHub via sintaxe **Mermaid**.
 
 ---
 
@@ -10,215 +10,235 @@ Este documento contém os diagramas de modelagem orientada a objetos do sistema,
 classDiagram
     direction TB
 
-    %% Pacote Model
-    class Pessoa {
+    %% Interfaces
+    class Identificavel {
+        <<interface>>
+        +getId() int
+        +setId(int id) void
+    }
+
+    class Seguravel {
+        <<interface>>
+        +getValorAvaliado() double
+        +getIdentificador() String
+        +getDescricaoCompleta() String
+    }
+
+    class DAO~T~ {
+        <<interface>>
+        +salvar(T entidade) void
+        +buscarPorId(int id) T
+        +listarTodos() List~T~
+        +atualizar(T entidade) void
+        +deletar(int id) boolean
+    }
+
+    %% Camada Model
+    class Cliente {
         <<abstract>>
         -int id
         -String nome
-        -String cpf
+        -String email
         -String telefone
-        +getId() int
-        +setId(int id) void
-        +getNome() String
-        +setNome(String nome) void
-        +getCpf() String
-        +setCpf(String cpf) void
-        +getTelefone() String
-        +setTelefone(String telefone) void
+        -String endereco
+        +getDocumentoPrincipal()* String
+        +getTipoCliente()* String
         +exibirResumo()* String
-        +toString() String
     }
 
-    class Cliente {
+    class PessoaFisica {
+        -String cpf
+        -String rg
+        -String dataNascimento
         -String sexo
-        -String email
-        +getSexo() String
-        +setSexo(String sexo) void
-        +getEmail() String
-        +setEmail(String email) void
+        -EstadoCivil estadoCivil
+        +getDocumentoPrincipal() String
+        +getTipoCliente() String
         +exibirResumo() String
-        +toCsv() String
-        +fromCsv(String csvLine)$ Cliente
-        +toString() String
+    }
+
+    class PessoaJuridica {
+        -String cnpj
+        -String razaoSocial
+        -String inscricaoEstadual
+        -String nomeFantasia
+        -String representanteLegal
+        +getDocumentoPrincipal() String
+        +getTipoCliente() String
+        +exibirResumo() String
+    }
+
+    class Apolice {
+        <<abstract>>
+        -int id
+        -String numeroApolice
+        -Cliente cliente
+        -double valorPremio
+        -double valorFranquia
+        -LocalDate dataInicioVigencia
+        -LocalDate dataFimVigencia
+        -StatusApolice status
+        -List~Cobertura~ coberturas
+        -List~Pagamento~ pagamentos
+        -List~Sinistro~ sinistros
+        +calcularPremioBase()* double
+        +getTipoApolice()* String
+        +exibirDetalhesApolice()* void
+        +isVencida() boolean
+    }
+
+    class ApoliceAuto {
+        -Veiculo veiculo
+        -int classeBonus
+        -String perfilPrincipalCondutor
+        +calcularPremioBase() double
+        +getTipoApolice() String
+        +exibirDetalhesApolice() void
+    }
+
+    class ApoliceResidencial {
+        -Imovel imovel
+        -String tipoResidencia
+        -boolean possuiAlarme
+        +calcularPremioBase() double
+        +getTipoApolice() String
+        +exibirDetalhesApolice() void
+    }
+
+    class ApoliceDeVida {
+        -double capitalSegurado
+        -boolean fumante
+        -int idadeSegurado
+        -List~String~ beneficiarios
+        +calcularPremioBase() double
+        +getTipoApolice() String
+        +exibirDetalhesApolice() void
     }
 
     class Veiculo {
-        <<abstract>>
         -int id
         -int clienteId
         -String marca
         -String modelo
         -int ano
         -String placa
+        -String renavam
+        -String chassi
+        -double valorFipe
+    }
+
+    class Imovel {
+        -int id
+        -int clienteId
+        -String cep
+        -String endereco
+        -String cidade
+        -String estado
+        -double valorMercado
+        -double areaM2
+        -String tipoConstrucao
+        -boolean possuiAlarmeIncendio
+    }
+
+    class Sinistro {
+        -int id
+        -String numeroProtocolo
+        -int apoliceId
+        -LocalDate dataOcorrencia
+        -LocalDate dataRegistro
+        -TipoSinistro tipoSinistro
+        -String descricao
+        -double valorEstimadoPrejuizo
+        -double valorIndenizado
+        -Perito perito
+        -OficinaParceira oficinaParceira
+        -String statusSinistro
+        -String laudoPericial
+    }
+
+    class Pagamento {
+        -int id
+        -int apoliceId
+        -int numeroParcela
+        -int totalParcelas
         -double valor
-        +getId() int
-        +setId(int id) void
-        +getClienteId() int
-        +setClienteId(int id) void
-        +getMarca() String
-        +setMarca(String marca) void
-        +getModelo() String
-        +setModelo(String modelo) void
-        +getAno() int
-        +setAno(int ano) void
-        +getPlaca() String
-        +setPlaca(String placa) void
-        +getValor() double
-        +setValor(double valor) void
-        +getTipo()* String
-        +exibirDetalhes()* void
-        +toCsv()* String
-        +toString() String
+        -LocalDate dataVencimento
+        -LocalDate dataPagamento
+        -boolean pago
+        -String formaPagamento
     }
 
-    class Carro {
-        -int quantidadePortas
-        -String tipoCombustivel
-        +getQuantidadePortas() int
-        +setQuantidadePortas(int qtd) void
-        +getTipoCombustivel() String
-        +setTipoCombustivel(String combustivel) void
-        +getTipo() String
-        +exibirDetalhes() void
-        +toCsv() String
-        +fromCsvParts(String[] parts)$ Carro
+    class Cobertura {
+        -int id
+        -String nome
+        -String descricao
+        -double valorLimite
+        -double valorFranquia
+        -TipoCobertura tipo
     }
 
-    class Moto {
-        -int cilindradas
-        -boolean partidaEletrica
-        +getCilindradas() int
-        +setCilindradas(int cc) void
-        +isPartidaEletrica() boolean
-        +setPartidaEletrica(boolean partida) void
-        +getTipo() String
-        +exibirDetalhes() void
-        +toCsv() String
-        +fromCsvParts(String[] parts)$ Moto
-    }
+    %% Relações de Herança e Interfaces
+    Identificavel <|.. Cliente
+    Identificavel <|.. Apolice
+    Identificavel <|.. Veiculo
+    Identificavel <|.. Imovel
+    Identificavel <|.. Sinistro
+    Identificavel <|.. Pagamento
+    Identificavel <|.. Cobertura
 
-    %% Relações de Herança (É-UM)
-    Pessoa <|-- Cliente : Herança (extends)
-    Veiculo <|-- Carro : Herança e Polimorfismo (extends)
-    Veiculo <|-- Moto : Herança e Polimorfismo (extends)
+    Seguravel <|.. Veiculo
+    Seguravel <|.. Imovel
 
-    %% Relações de Associação (Possui)
-    Cliente "1" -- "0..*" Veiculo : possui (clienteId)
+    Cliente <|-- PessoaFisica
+    Cliente <|-- PessoaJuridica
 
-    %% Pacote Repository
-    class IdGenerator {
-        -String filename
-        +getNextId() int
-    }
+    Apolice <|-- ApoliceAuto
+    Apolice <|-- ApoliceResidencial
+    Apolice <|-- ApoliceDeVida
 
-    class ClienteRepository {
-        -String filename
-        -IdGenerator idGenerator
-        +save(Cliente c) Cliente
-        +findAll() List~Cliente~
-        +findById(int id) Cliente
-        +existsById(int id) boolean
-        +update(Cliente c) boolean
-        +deleteById(int id) boolean
-    }
+    Apolice "1" o-- "1" Cliente : contratada por
+    ApoliceAuto "1" o-- "1" Veiculo : protege
+    ApoliceResidencial "1" o-- "1" Imovel : protege
+    Apolice "1" *-- "0..*" Cobertura : possui
+    Apolice "1" *-- "0..*" Pagamento : gera
+    Apolice "1" *-- "0..*" Sinistro : registra
 
-    class VeiculoRepository {
-        -String filename
-        -IdGenerator idGenerator
-        +save(Veiculo v) Veiculo
-        +findAll() List~Veiculo~
-        +findById(int id) Veiculo
-        +findByClienteId(int clienteId) List~Veiculo~
-        +deleteById(int id) boolean
-        +deleteByClienteId(int clienteId) int
-    }
-
-    ClienteRepository o-- IdGenerator
-    VeiculoRepository o-- IdGenerator
-    ClienteRepository ..> Cliente : gerencia
-    VeiculoRepository ..> Veiculo : gerencia polimorficamente
-
-    %% Pacote Controller e View
-    class ApplicationController {
-        -Menu menu
-        -Input input
-        -ClienteRepository clienteRepository
-        -VeiculoRepository veiculoRepository
-        +iniciar() void
-    }
-
-    class Menu {
-        +exibirMenuPrincipal() void
-        +exibirMenuClientes() void
-        +exibirMenuVeiculos() void
-        +exibirMenuRelatorios() void
-    }
-
-    class Input {
-        -Scanner scanner
-        +lerOpcao() int
-        +lerId(String prompt) int
-        +lerTexto(String prompt) String
-        +lerDouble(String prompt) double
-        +lerConfirmacao(String prompt) boolean
-        +coletarDadosNovoCliente() Cliente
-        +coletarDadosNovoCarro(int clienteId) Carro
-        +coletarDadosNovaMoto(int clienteId) Moto
-    }
-
-    class Main {
-        +main(String[] args)$ void
-    }
-
-    Main ..> ApplicationController : instancia e dispara
-    ApplicationController o-- Menu
-    ApplicationController o-- Input
-    ApplicationController o-- ClienteRepository
-    ApplicationController o-- VeiculoRepository
+    %% Repositórios
+    DAO <|.. ClienteDAO
+    DAO <|.. ApoliceDAO
+    DAO <|.. SinistroDAO
+    DAO <|.. VeiculoDAO
+    DAO <|.. PagamentoDAO
 ```
 
 ---
 
-## 2. Diagrama de Sequência: Cadastro de Veículo com Validação de Integridade
-
-O diagrama abaixo ilustra a interação entre as camadas para evitar o cadastro de veículos órfãos:
+## 2. Diagrama de Sequência: Emissão de Apólice com Cálculo Atuarial
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Usuario as Usuário
-    participant Controller as ApplicationController
-    participant Input as Input (View)
-    participant CliRepo as ClienteRepository
-    participant VeiRepo as VeiculoRepository
-    participant IdGen as IdGenerator
+    actor Usuario as Usuário / Corretor
+    participant Ctrl as ControladorApolice
+    participant Emissor as EmissorDeApoliceService
+    participant Validador as ValidadorDePropostaService
+    participant Calc as CalculadoraDePremioService
+    participant ApDao as ApoliceDAO
+    participant PagDao as PagamentoDAO
 
-    Usuario->>Controller: Escolhe Cadastrar Carro
-    Controller->>Input: lerId("ID do Cliente Proprietário:")
-    Input-->>Controller: Retorna clienteId (ex: 1)
-    
-    Controller->>CliRepo: existsById(1)
-    alt Cliente Não Existe
-        CliRepo-->>Controller: false
-        Controller-->>Usuario: Exibe mensagem de erro (Cliente inexistente)
-    else Cliente Existe
-        CliRepo-->>Controller: true
-        Controller->>Input: coletarDadosNovoCarro(1)
-        Input-->>Controller: Retorna objeto Carro instanciado
-        Controller->>VeiRepo: save(carro)
-        VeiRepo->>IdGen: getNextId()
-        IdGen-->>VeiRepo: Retorna ID sequencial gerado (ex: 1)
-        VeiRepo->>VeiRepo: Grava linha CSV em data/veiculos.txt
-        VeiRepo-->>Controller: Retorna Carro salvo com ID
-        Controller-->>Usuario: "Carro cadastrado com sucesso! [ID: #1]"
+    Usuario->>Ctrl: emitirApolice(proposta, parcelas, forma)
+    Ctrl->>Emissor: emitirApolice(proposta, parcelas, forma)
+    Emissor->>Validador: validarProposta(proposta)
+    Validador-->>Emissor: Validação OK
+    Emissor->>Calc: calcularPremio(proposta)
+    Calc->>proposta: calcularPremioBase() [Polimorfismo]
+    proposta-->>Calc: Retorna prêmio base específico
+    Calc-->>Emissor: Retorna prêmio total com tributos
+    Emissor->>ApDao: salvar(proposta)
+    ApDao-->>Emissor: Apólice persistida com ID
+    loop Para cada parcela
+        Emissor->>PagDao: salvar(pagamento)
     end
+    Emissor-->>Ctrl: Apólice Ativa com Pagamentos
+    Ctrl-->>Usuario: Confirmação de Emissão com Sucesso
 ```
-
----
-
-## 3. Explicação dos Conceitos Aplicados
-
-1. **Encapsulamento:** Todos os atributos em todas as classes de modelo são `private`. O acesso e modificação ocorrem unicamente por métodos públicos com validação de dados.
-2. **Herança:** A classe `Cliente` herda atributos e comportamentos de `Pessoa` via palavra-chave `extends`. As classes `Carro` e `Moto` herdam de `Veiculo`.
-3. **Abstração:** `Pessoa` e `Veiculo` são declaradas com `abstract`, impedindo instanciação direta incompleta e definindo contratos via métodos abstratos.
-4. **Polimorfismo:** `Carro` e `Moto` sobrescrevem (`@Override`) o método `exibirDetalhes()` e `getTipo()`. A coleção `List<Veiculo>` permite iterar sobre veículos heterogêneos chamando o comportamento específico de cada subclasse em tempo de execução.
