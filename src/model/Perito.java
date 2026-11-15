@@ -1,44 +1,33 @@
 package model;
 
-/**
- * Representa um perito avaliador de sinistros credenciado.
- */
-public class Perito implements Identificavel {
-    private int id;
-    private String nome;
+public class Perito extends Pessoa implements Identificavel {
     private String registroProfissional;
     private String especialidade;
-    private String telefone;
     private String email;
 
-    public Perito() {}
+    public Perito() {
+        super(0, "Perito", "000.000.000-00", "0000-0000");
+    }
 
     public Perito(int id, String nome, String registroProfissional,
                   String especialidade, String telefone, String email) {
-        this.id = id;
-        this.nome = nome;
+        super(
+                id,
+                (nome != null && !nome.isBlank()) ? nome : "Perito",
+                (registroProfissional != null && !registroProfissional.isBlank()) ? registroProfissional : "000.000.000-00",
+                (telefone != null && !telefone.isBlank()) ? telefone : "0000-0000"
+        );
         this.registroProfissional = registroProfissional;
         this.especialidade = especialidade;
-        this.telefone = telefone;
         this.email = email;
     }
 
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
+    public Perito(int id, String nome, String cpf, String telefone, String sexo,
+                  String email, String registroProfissional, String especialidade) {
+        super(id, nome, cpf, telefone);
+        this.registroProfissional = registroProfissional;
+        this.especialidade = especialidade;
+        this.email = email;
     }
 
     public String getRegistroProfissional() {
@@ -57,14 +46,6 @@ public class Perito implements Identificavel {
         this.especialidade = especialidade;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -74,8 +55,13 @@ public class Perito implements Identificavel {
     }
 
     @Override
+    public String exibirResumo() {
+        return String.format("Perito %s (Reg: %s) - %s | Tel: %s",
+                getNome(), registroProfissional, especialidade, getTelefone());
+    }
+
+    @Override
     public String toString() {
-        return String.format("Perito [ID: %d] %s | Reg: %s | Esp: %s | Contato: %s",
-                id, nome, registroProfissional, especialidade, telefone);
+        return exibirResumo();
     }
 }

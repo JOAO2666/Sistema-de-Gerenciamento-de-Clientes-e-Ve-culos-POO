@@ -3,10 +3,6 @@ package model;
 import model.enums.TipoSinistro;
 import java.time.LocalDate;
 
-/**
- * Representa um sinistro reportado pelo segurado.
- * Implementa a interface Identificavel.
- */
 public class Sinistro implements Identificavel {
     private int id;
     private String numeroProtocolo;
@@ -19,7 +15,7 @@ public class Sinistro implements Identificavel {
     private double valorIndenizado;
     private Perito perito;
     private OficinaParceira oficinaParceira;
-    private String statusSinistro; // REGISTRADO, EM_ANALISE, APROVADO, PAGO, RECUSADO
+    private String statusSinistro;
     private String laudoPericial;
 
     public Sinistro() {
@@ -149,8 +145,8 @@ public class Sinistro implements Identificavel {
 
     @Override
     public String toString() {
-        return String.format("Sinistro [%s] ID: %d | Apólice: %d | Tipo: %s | Prejuízo: R$ %.2f | Status: %s | Indenização: R$ %.2f",
-                numeroProtocolo, id, apoliceId, tipoSinistro.getDescricao(),
+        return String.format("ID %d - Protocolo %s | Apólice %d | %s | Prejuízo: R$ %.2f | Status: %s | Indenização: R$ %.2f",
+                id, numeroProtocolo, apoliceId, tipoSinistro.getDescricao(),
                 valorEstimadoPrejuizo, statusSinistro, valorIndenizado);
     }
 }

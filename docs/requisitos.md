@@ -1,53 +1,45 @@
-# Especificação de Requisitos do Sistema
+# Requisitos do Sistema
 
-**Projeto:** Sistema de Gerenciamento de Clientes e Veículos  
-**Disciplina:** Programação Orientada a Objetos (POO)  
-**Docente:** Prof.ª Ana Emília  
+Projeto: Sistema de Gerenciamento de Clientes, Veículos e Seguros
+Disciplina: Programação Orientada a Objetos (POO)
+Docente: Prof.ª Ana Emília de Melo Queiroz
 
----
+## 1. Descrição geral
 
-## 1. Visão Geral do Sistema
+O sistema foi desenvolvido em Java para gerenciar o cadastro de clientes de uma corretora/seguradora, seus bens (veículos e imóveis), a emissão de apólices de seguro, o controle de parcelas e a abertura de sinistros. A aplicação roda via console e salva os dados em arquivos de texto na pasta `data/`.
 
-O **Sistema de Gerenciamento de Clientes e Veículos** é uma aplicação em Java desenvolvida com arquitetura modular em camadas (MVC) e persistência em arquivos de texto plano. O sistema tem como finalidade gerenciar cadastros de clientes e seus respectivos veículos automotores (Carros e Motos), demonstrando na prática os princípios fundamentais da Programação Orientada a Objetos: **Encapsulamento**, **Herança**, **Abstração** e **Polimorfismo**.
+## 2. Requisitos funcionais
 
----
+### Clientes e bens seguráveis
+* RF01 - Cadastrar cliente: permitir o cadastro de pessoa física (CPF, RG, data de nascimento, sexo e estado civil) e pessoa jurídica (CNPJ, razão social, inscrição estadual, nome fantasia e representante).
+* RF02 - Consultar e listar clientes: listar todos os clientes cadastrados e buscar por ID ou por CPF/CNPJ.
+* RF03 - Atualizar e remover cliente: alterar telefone, e-mail e endereço de um cliente existente ou removê-lo do cadastro, apagando também os veículos vinculados.
+* RF04 - Cadastrar veículo: vincular um veículo (marca, modelo, ano, placa, renavam, chassi e valor FIPE) a um cliente já cadastrado.
+* RF05 - Cadastrar imóvel: informar os dados do imóvel (CEP, endereço, cidade, estado, área, valor de mercado e tipo de construção) na contratação do seguro residencial.
 
-## 2. Requisitos Funcionais (RF)
+### Apólices e financeiro
+* RF06 - Emitir apólice de automóvel: gerar apólice vinculada a um cliente e a um veículo, considerando classe de bônus e perfil do condutor no cálculo do prêmio.
+* RF07 - Emitir apólice residencial: gerar apólice vinculada a um imóvel, considerando o tipo de residência e presença de alarme.
+* RF08 - Emitir apólice de vida: gerar apólice de vida para o cliente, calculando o prêmio conforme capital segurado, idade e indicador de fumante.
+* RF09 - Gerar e quitar parcelas: dividir o valor total do prêmio na quantidade de parcelas escolhida e permitir registrar o pagamento de cada parcela.
+* RF10 - Cancelar apólice: permitir o cancelamento de uma apólice ativa pelo seu ID.
 
-### Módulo de Clientes
-- **[RF01] Cadastrar Cliente:** O sistema deve permitir o cadastro de novos clientes com ID gerado automaticamente, Nome, CPF, Telefone, Sexo e E-mail.
-- **[RF02] Listar Clientes:** O sistema deve exibir todos os clientes cadastrados de forma clara e resumida.
-- **[RF03] Buscar Cliente por ID:** O sistema deve permitir consultar um cliente pelo seu identificador único, exibindo todos os seus dados e a contagem de veículos vinculados.
-- **[RF04] Atualizar Cliente:** O sistema deve permitir a alteração dos dados cadastrais de um cliente existente.
-- **[RF05] Remover Cliente:** O sistema deve permitir a remoção de um cliente, com proteção contra órfãos e opção de exclusão em cascata dos veículos pertencentes a ele.
+### Sinistros e relatórios
+* RF11 - Registrar sinistro: abrir ocorrência para uma apólice ativa informando data, tipo de sinistro, descrição e valor estimado do prejuízo.
+* RF12 - Designar perito e liquidar sinistro: associar um perito ao sinistro para registrar o laudo de aprovação ou reprovação e definir o valor indenizado.
+* RF13 - Exibir relatório geral: mostrar o resumo de clientes, veículos, apólices por ramo, valores de prêmios, parcelas recebidas e sinistros registrados.
 
-### Módulo de Veículos (Carros e Motos)
-- **[RF06] Cadastrar Carro:** O sistema deve permitir cadastrar um Carro vinculado a um cliente válido, contendo Marca, Modelo, Ano, Placa, Valor Estimado, Quantidade de Portas e Tipo de Combustível.
-- **[RF07] Cadastrar Moto:** O sistema deve permitir cadastrar uma Moto vinculada a um cliente válido, contendo Marca, Modelo, Ano, Placa, Valor Estimado, Cilindradas (cc) e Indicação de Partida Elétrica.
-- **[RF08] Listar Veículos por Cliente:** O sistema deve listar todos os veículos vinculados a um determinado cliente, exibindo detalhes específicos de cada tipo polimorficamente.
-- **[RF09] Listar Todos os Veículos:** O sistema deve listar todos os veículos registrados no sistema.
-- **[RF10] Remover Veículo:** O sistema deve permitir a remoção individual de um veículo pelo seu ID.
+## 3. Requisitos não funcionais
 
-### Módulo de Relatórios e Polimorfismo
-- **[RF11] Demonstração Polimórfica:** O sistema deve iterar sobre coleções genéricas `List<Veiculo>` e acionar dinamicamente métodos sobrescritos (`exibirDetalhes()` e `getTipo()`), comprovando polimorfismo de subtipo em tempo de execução.
-- **[RF12] Relatório de Patrimônio:** O sistema deve totalizar a quantidade de clientes, veículos e o valor monetário total do patrimônio cadastrado.
+* RNF01 - Linguagem: Java (compatível com JDK 11 ou superior).
+* RNF02 - Organização do código: separação em pacotes (`model`, `repository`, `service`, `controller`, `view` e `exception`).
+* RNF03 - Persistência: gravação e leitura em arquivos `.txt` separados por ponto e vírgula (`;`) no diretório `data/`.
+* RNF04 - Tratamento de erros no console: validação de entradas numéricas e de datas no menu para evitar que o programa encerre por erro de digitação.
 
----
+## 4. Regras de negócio
 
-## 3. Requisitos Não-Funcionais (RNF)
-
-- **[RNF01] Linguagem:** Desenvolvido em Java 17+ (compatível com Java 21 LTS).
-- **[RNF02] Arquitetura:** Padrão arquitetural em camadas separadas (`model`, `repository`, `view`, `controller`).
-- **[RNF03] Paradigma:** 100% Orientado a Objetos (sem código estruturado monolítico no `main`).
-- **[RNF04] Persistência:** Armazenamento em arquivos de texto plano (.txt em formato CSV) na pasta `data/`.
-- **[RNF05] Robustez de Entrada:** Tratamento defensivo de entradas do usuário para evitar encerramento abrupto por exceções (`NumberFormatException`, `InputMismatchException`).
-- **[RNF06] Integridade Relacional:** Validação estrita de existência de cliente ao cadastrar veículo (evitar veículos órfãos).
-- **[RNF07] Controle de Versão:** Versionamento via Git com histórico de commits semânticos e branches temáticas.
-
----
-
-## 4. Regras de Negócio (RN)
-
-- **[RN01] Unicidade de ID:** IDs de clientes e veículos são sequenciais, únicos e gerenciados de forma persistente.
-- **[RN02] Existência Prévia:** Nenhum veículo pode ser cadastrado para um `clienteId` que não exista no sistema.
-- **[RN03] Integridade na Exclusão:** Ao excluir um cliente que possua veículos, o usuário deve ser advertido e ter a opção de exclusão em cascata.
+* RN01 - Identificação sequencial: o ID de cada entidade é gerado automaticamente a partir do arquivo `sequencias.txt`.
+* RN02 - Vínculo de veículo: só é possível cadastrar um veículo para um cliente que já exista no sistema.
+* RN03 - Cálculo de prêmio: cada tipo de apólice calcula seu prêmio base de acordo com suas próprias regras, somando as coberturas adicionais e o IOF de 7,38%.
+* RN04 - Vigência no sinistro: não é permitido registrar sinistro para apólice cancelada, suspensa ou fora do período de vigência (`ApoliceVencidaException`).
+* RN05 - Sinistro duplicado: o sistema bloqueia o registro de dois sinistros do mesmo tipo e na mesma data para a mesma apólice (`SinistroJaRegistradoException`).

@@ -4,10 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Representa uma apólice de seguro de vida individual ou em grupo.
- * Especialização de Apolice com regras de cálculo atuariais simplificadas.
- */
 public class ApoliceDeVida extends Apolice {
     private double capitalSegurado;
     private boolean fumante;
@@ -72,17 +68,14 @@ public class ApoliceDeVida extends Apolice {
         if (capitalSegurado <= 0) {
             return 600.0;
         }
-        // Base proporcional ao capital segurado (0.4%)
         double base = capitalSegurado * 0.004;
 
-        // Fator idade: acréscimo proporcional para idades mais avançadas
         if (idadeSegurado > 50) {
             base *= 1.4;
         } else if (idadeSegurado > 35) {
             base *= 1.15;
         }
 
-        // Fator tabagismo (+30% de agravo de risco)
         if (fumante) {
             base *= 1.30;
         }
@@ -97,13 +90,12 @@ public class ApoliceDeVida extends Apolice {
 
     @Override
     public void exibirDetalhesApolice() {
-        System.out.println("=== Detalhes da Apólice de Vida ===");
+        System.out.println("\n--- Dados da Apólice de Vida ---");
         System.out.println(this);
-        System.out.println("Capital Segurado: R$ " + String.format("%.2f", capitalSegurado));
-        System.out.println("Idade do Segurado: " + idadeSegurado + " anos");
-        System.out.println("Fumante: " + (fumante ? "SIM (+30% risco)" : "NÃO"));
-        System.out.println("Beneficiários Cadastrados (" + beneficiarios.size() + "): " +
-                (beneficiarios.isEmpty() ? "Herdeiros Legais" : String.join(", ", beneficiarios)));
-        System.out.println("Coberturas ativas: " + getCoberturas().size());
+        System.out.printf("Capital segurado: R$ %.2f\n", capitalSegurado);
+        System.out.println("Idade do segurado: " + idadeSegurado + " anos");
+        System.out.println("Fumante: " + (fumante ? "Sim" : "Não"));
+        System.out.println("Beneficiários: " +
+                (beneficiarios.isEmpty() ? "Herdeiros legais" : String.join(", ", beneficiarios)));
     }
 }

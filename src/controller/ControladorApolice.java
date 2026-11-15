@@ -16,9 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Controlador responsável pela gestão de Apólices, Sinistros e Pagamentos.
- */
 public class ControladorApolice {
     private final ApoliceDAO apoliceDAO;
     private final PagamentoDAO pagamentoDAO;
@@ -34,6 +31,11 @@ public class ControladorApolice {
         this.sinistroDAO = sinistroDAO;
         this.emissorService = emissorService;
         this.sinistroService = sinistroService;
+    }
+
+    public Apolice emitirApolice(Apolice proposta)
+            throws ClienteNaoEncontradoException, ValorPremioInvalidoException {
+        return emissorService.emitirApolice(proposta);
     }
 
     public Apolice emitirApolice(Apolice proposta, int parcelas, String formaPagamento)
@@ -81,6 +83,16 @@ public class ControladorApolice {
 
     public List<Pagamento> listarTodosPagamentos() {
         return pagamentoDAO.listarTodos();
+    }
+
+    public boolean quitarPagamento(int pagamentoId) {
+        Pagamento p = pagamentoDAO.buscarPorId(pagamentoId);
+        if (p != null && !p.isPago()) {
+            p.registrarQuitacao();
+            pagamentoDAO.atualizar(p);
+            return true;
+        }
+        return false;
     }
 
     public boolean quitarPagamento(int pagamentoId, String forma) {

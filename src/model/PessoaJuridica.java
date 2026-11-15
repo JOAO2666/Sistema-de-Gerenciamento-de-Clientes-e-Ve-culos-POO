@@ -1,8 +1,5 @@
 package model;
 
-/**
- * Representa um cliente Pessoa Jurídica. Herda de Cliente.
- */
 public class PessoaJuridica extends Cliente {
     private String cnpj;
     private String razaoSocial;
@@ -77,7 +74,7 @@ public class PessoaJuridica extends Cliente {
 
     @Override
     public String exibirResumo() {
-        return String.format("PJ: %s (%s) | CNPJ: %s | IE: %s | Rep. Legal: %s | Contato: %s / %s",
-                getNome(), razaoSocial, cnpj, inscricaoEstadual, representanteLegal, getTelefone(), getEmail());
+        return String.format("ID %d - PJ: %s (%s) | CNPJ: %s | IE: %s | Rep: %s | Tel: %s | %s",
+                getId(), getNome(), razaoSocial, cnpj, inscricaoEstadual, representanteLegal, getTelefone(), getEmail());
     }
 }

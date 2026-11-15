@@ -1,16 +1,13 @@
-# Diagramas UML do Sistema de Seguros e Clientes (POO)
+# Diagramas UML do Projeto
 
-Este documento contém os diagramas de modelagem orientada a objetos atualizados do sistema, renderizáveis diretamente pelo GitHub via sintaxe **Mermaid**.
+Diagramas de classes e de sequência do sistema no formato Mermaid.
 
----
-
-## 1. Diagrama de Classes Completo
+## 1. Diagrama de classes
 
 ```mermaid
 classDiagram
     direction TB
 
-    %% Interfaces
     class Identificavel {
         <<interface>>
         +getId() int
@@ -33,7 +30,22 @@ classDiagram
         +deletar(int id) boolean
     }
 
-    %% Camada Model
+    class Pessoa {
+        <<abstract>>
+        -int id
+        -String nome
+        -String cpf
+        -String telefone
+        +exibirResumo()* String
+    }
+
+    class Perito {
+        -String registroProfissional
+        -String especialidade
+        -String email
+        +exibirResumo() String
+    }
+
     class Cliente {
         <<abstract>>
         -int id
@@ -84,6 +96,8 @@ classDiagram
         +calcularPremioBase()* double
         +getTipoApolice()* String
         +exibirDetalhesApolice()* void
+        +adicionarCobertura(Cobertura c) void
+        +adicionarCobertura(String nome, double limite, double franquia, TipoCobertura tipo) void
         +isVencida() boolean
     }
 
@@ -166,6 +180,8 @@ classDiagram
         -LocalDate dataPagamento
         -boolean pago
         -String formaPagamento
+        +registrarQuitacao() void
+        +registrarQuitacao(LocalDate data) void
     }
 
     class Cobertura {
@@ -177,8 +193,8 @@ classDiagram
         -TipoCobertura tipo
     }
 
-    %% Relações de Herança e Interfaces
     Identificavel <|.. Cliente
+    Identificavel <|.. Perito
     Identificavel <|.. Apolice
     Identificavel <|.. Veiculo
     Identificavel <|.. Imovel
@@ -189,6 +205,7 @@ classDiagram
     Seguravel <|.. Veiculo
     Seguravel <|.. Imovel
 
+    Pessoa <|-- Perito
     Cliente <|-- PessoaFisica
     Cliente <|-- PessoaJuridica
 
@@ -196,14 +213,14 @@ classDiagram
     Apolice <|-- ApoliceResidencial
     Apolice <|-- ApoliceDeVida
 
-    Apolice "1" o-- "1" Cliente : contratada por
-    ApoliceAuto "1" o-- "1" Veiculo : protege
-    ApoliceResidencial "1" o-- "1" Imovel : protege
-    Apolice "1" *-- "0..*" Cobertura : possui
-    Apolice "1" *-- "0..*" Pagamento : gera
-    Apolice "1" *-- "0..*" Sinistro : registra
+    Apolice "1" o-- "1" Cliente : cliente
+    ApoliceAuto "1" o-- "1" Veiculo : veiculo
+    ApoliceResidencial "1" o-- "1" Imovel : imovel
+    Apolice "1" *-- "0..*" Cobertura : coberturas
+    Apolice "1" *-- "0..*" Pagamento : pagamentos
+    Apolice "1" *-- "0..*" Sinistro : sinistros
+    Sinistro "0..*" o-- "0..1" Perito : perito
 
-    %% Repositórios
     DAO <|.. ClienteDAO
     DAO <|.. ApoliceDAO
     DAO <|.. SinistroDAO
@@ -211,14 +228,12 @@ classDiagram
     DAO <|.. PagamentoDAO
 ```
 
----
-
-## 2. Diagrama de Sequência: Emissão de Apólice com Cálculo Atuarial
+## 2. Diagrama de sequência: emissão de apólice
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Usuario as Usuário / Corretor
+    actor Usuario as Usuario
     participant Ctrl as ControladorApolice
     participant Emissor as EmissorDeApoliceService
     participant Validador as ValidadorDePropostaService
@@ -229,16 +244,16 @@ sequenceDiagram
     Usuario->>Ctrl: emitirApolice(proposta, parcelas, forma)
     Ctrl->>Emissor: emitirApolice(proposta, parcelas, forma)
     Emissor->>Validador: validarProposta(proposta)
-    Validador-->>Emissor: Validação OK
+    Validador-->>Emissor: ok
     Emissor->>Calc: calcularPremio(proposta)
-    Calc->>proposta: calcularPremioBase() [Polimorfismo]
-    proposta-->>Calc: Retorna prêmio base específico
-    Calc-->>Emissor: Retorna prêmio total com tributos
+    Calc->>proposta: calcularPremioBase()
+    proposta-->>Calc: premio base
+    Calc-->>Emissor: premio total com IOF
     Emissor->>ApDao: salvar(proposta)
-    ApDao-->>Emissor: Apólice persistida com ID
-    loop Para cada parcela
+    ApDao-->>Emissor: apolice salva com ID
+    loop para cada parcela
         Emissor->>PagDao: salvar(pagamento)
     end
-    Emissor-->>Ctrl: Apólice Ativa com Pagamentos
-    Ctrl-->>Usuario: Confirmação de Emissão com Sucesso
+    Emissor-->>Ctrl: apolice emitida
+    Ctrl-->>Usuario: exibe resumo da apolice
 ```

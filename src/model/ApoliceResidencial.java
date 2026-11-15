@@ -2,13 +2,9 @@ package model;
 
 import java.time.LocalDate;
 
-/**
- * Representa uma apólice de seguro residencial.
- * Especialização de Apolice com atributos e regras de cálculo específicas para imóveis.
- */
 public class ApoliceResidencial extends Apolice {
     private Imovel imovel;
-    private String tipoResidencia; // Casa, Apartamento, Condomínio Fechado
+    private String tipoResidencia;
     private boolean possuiAlarme;
 
     public ApoliceResidencial() {
@@ -53,9 +49,7 @@ public class ApoliceResidencial extends Apolice {
         if (imovel == null || imovel.getValorMercado() <= 0) {
             return 800.0;
         }
-        // Base: 0.3% do valor de mercado do imóvel
         double base = imovel.getValorMercado() * 0.003;
-        // Desconto se possuir alarme/segurança privada (15%)
         if (possuiAlarme || imovel.isPossuiAlarmeIncendio()) {
             base *= 0.85;
         }
@@ -69,14 +63,13 @@ public class ApoliceResidencial extends Apolice {
 
     @Override
     public void exibirDetalhesApolice() {
-        System.out.println("=== Detalhes da Apólice Residencial ===");
+        System.out.println("\n--- Dados da Apólice Residencial ---");
         System.out.println(this);
         if (imovel != null) {
-            System.out.println("Imóvel Segurado: " + imovel.getDescricaoCompleta());
+            System.out.println("Imóvel: " + imovel.getDescricaoCompleta());
         }
-        System.out.println("Tipo de Residência: " + tipoResidencia);
-        System.out.println("Possui Alarme / Monitoramento: " + (possuiAlarme ? "SIM" : "NÃO"));
-        System.out.println("Franquia: R$ " + String.format("%.2f", getValorFranquia()));
-        System.out.println("Coberturas ativas: " + getCoberturas().size());
+        System.out.println("Tipo de residência: " + tipoResidencia);
+        System.out.println("Possui alarme: " + (possuiAlarme ? "Sim" : "Não"));
+        System.out.printf("Franquia: R$ %.2f\n", getValorFranquia());
     }
 }

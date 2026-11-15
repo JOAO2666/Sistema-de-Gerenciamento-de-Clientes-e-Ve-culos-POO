@@ -2,9 +2,6 @@ package model;
 
 import java.time.LocalDate;
 
-/**
- * Representa uma parcela de pagamento de uma apólice de seguro.
- */
 public class Pagamento implements Identificavel {
     private int id;
     private int apoliceId;
@@ -104,12 +101,13 @@ public class Pagamento implements Identificavel {
         this.formaPagamento = formaPagamento;
     }
 
-    /**
-     * Registra a quitação da parcela na data atual.
-     */
-    public void registrarQuitacao(String forma) {
+    public void registrarQuitacao() {
         this.pago = true;
         this.dataPagamento = LocalDate.now();
+    }
+
+    public void registrarQuitacao(String forma) {
+        registrarQuitacao();
         if (forma != null && !forma.isBlank()) {
             this.formaPagamento = forma;
         }
@@ -117,8 +115,8 @@ public class Pagamento implements Identificavel {
 
     @Override
     public String toString() {
-        return String.format("Pagamento [ID: %d] Apólice: %d | Parcela %d/%d | R$ %.2f | Venc: %s | Status: %s | Forma: %s",
+        return String.format("ID %d | Apólice %d | Parcela %d/%d | R$ %.2f | Venc: %s | %s (%s)",
                 id, apoliceId, numeroParcela, totalParcelas, valor,
-                dataVencimento, (pago ? "PAGO em " + dataPagamento : "PENDENTE"), formaPagamento);
+                dataVencimento, (pago ? "Pago em " + dataPagamento : "Pendente"), formaPagamento);
     }
 }

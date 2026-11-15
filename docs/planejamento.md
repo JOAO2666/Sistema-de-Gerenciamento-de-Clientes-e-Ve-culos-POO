@@ -1,85 +1,63 @@
-# Planejamento do Projeto e Divisão da Equipe
+# Planejamento e Divisão da Equipe
 
-**Projeto:** Sistema de Gerenciamento de Clientes e Veículos (POO em Java)  
-**Equipe:** 5 Integrantes  
+Projeto: Sistema de Gerenciamento de Clientes, Veículos e Seguros (POO)
+Equipe: 5 integrantes
 
----
+## 1. Divisão de tarefas
 
-## 1. Divisão de Responsabilidades
+O desenvolvimento foi dividido entre os 5 integrantes do grupo para que cada um trabalhasse em uma parte do código e apresentasse os conceitos correspondentes:
 
-Para garantir que todos os 5 integrantes participem ativamente do desenvolvimento em código e na apresentação, o projeto foi dividido em frentes modulares:
-
-| Integrante | Papel no Projeto | Módulos e Classes | Foco Teórico na Apresentação |
+| Integrante | Responsabilidade no projeto | Principais arquivos | Tópicos na apresentação |
 | :--- | :--- | :--- | :--- |
-| **João** | Integração, Arquitetura e Controle | `Main.java`, `ApplicationController.java`, Git & Repositório | Arquitetura MVC, coordenação de camadas e integridade relacional |
-| **Ícaro** | Domínio Base e Encapsulamento | `Pessoa.java` (abstrata), `Cliente.java` | Encapsulamento (`private`), modificadores de acesso, herança e `super()` |
-| **Alexandre** | Abstração de Veículos e Especialização Carro | `Veiculo.java` (abstrata), `Carro.java` | Classes abstratas, métodos abstratos e herança de especialização |
-| **Hícaro** | Especialização Moto e Polimorfismo | `Moto.java`, demonstração com `List<Veiculo>` | Polimorfismo de inclusão (subtipo), `@Override` e dynamic binding |
-| **Natanael** | Persistência, Testes e Documentação | `ClienteRepository.java`, `VeiculoRepository.java`, `IdGenerator.java`, `docs/`, `test/` | Persistência em arquivo CSV, separação de responsabilidades e testes de validação |
+| João | Integração geral, controladores e interface de console | `Main.java`, `MenuPrincipal.java`, `ControladorCliente.java`, `ControladorApolice.java` | Organização em pacotes (MVC), fluxo de telas e integração entre as camadas |
+| Ícaro | Classes base de pessoas e clientes | `Pessoa.java`, `Cliente.java`, `PessoaFisica.java`, `PessoaJuridica.java`, `Perito.java` | Encapsulamento, modificadores de acesso, classe abstrata e herança com `super()` |
+| Alexandre | Bens seguráveis e hierarquia de apólices | `Seguravel.java`, `Veiculo.java`, `Imovel.java`, `Apolice.java`, `ApoliceAuto.java` | Interfaces de domínio, associação entre classes e especialização de apólices |
+| Hícaro | Demais apólices, regras de cálculo e sinistros | `ApoliceResidencial.java`, `ApoliceDeVida.java`, `CalculadoraDePremioService.java`, `ProcessadorDeSinistroService.java`, `exception/` | Polimorfismo de subtipo (sobrescrita), sobrecarga de métodos (overload) e exceções personalizadas |
+| Natanael | Persistência em arquivos, parcelas e testes | `DAO.java`, `ConexaoBanco.java`, `ClienteDAO.java`, `VeiculoDAO.java`, `ApoliceDAO.java`, `PagamentoDAO.java`, `SinistroDAO.java`, `TestePOO.java` | Uso de Generics (`DAO<T>`), leitura/escrita em arquivos `.txt` e testes automatizados |
 
----
+## 2. Organização no Git
 
-## 2. Estratégia de Branches (Git Flow Simplificado)
-
-Para evitar conflitos de merge e organizar as entregas, o repositório adota o modelo:
+O repositório utiliza uma branch principal (`main`), uma branch de integração (`develop`) e branches separadas para as tarefas do grupo:
 
 ```text
-main (produção / versão final estável)
+main
   ↑
-develop (integração e testes contínuos)
+develop
   ↑
-  ├── feat/pessoa-cliente      (Ícaro)
-  ├── feat/veiculos-carro      (Alexandre)
-  ├── feat/moto-polimorfismo   (Hícaro)
-  ├── feat/persistencia-csv    (Natanael)
-  └── feat/controller-view     (João)
+  ├── feat/pessoa-cliente
+  ├── feat/bens-apolice-auto
+  ├── feat/apolices-servicos
+  ├── feat/persistencia-dao
+  └── feat/controller-menu
 ```
 
----
+## 3. Fluxo básico de uso do Git
 
-## 3. Passo a Passo do Git para Cada Integrante
-
-### Passo 1: Clonar o repositório
+1. Clonar o repositório:
 ```bash
 git clone https://github.com/JOAO2666/Sistema-de-Gerenciamento-de-Clientes-e-Ve-culos-POO.git
 cd Sistema-de-Gerenciamento-de-Clientes-e-Ve-culos-POO
 ```
 
-### Passo 2: Criar e alternar para a sua branch de trabalho
+2. Criar a branch da tarefa a partir da `develop`:
 ```bash
 git checkout develop
-git checkout -b feat/sua-feature
+git checkout -b feat/nome-da-tarefa
 ```
 
-### Passo 3: Fazer alterações e commitar
+3. Salvar as alterações e enviar para o GitHub:
 ```bash
 git add .
-git commit -m "feat: implementa classe X com encapsulamento"
+git commit -m "feat: descricao da alteracao"
+git push -u origin feat/nome-da-tarefa
 ```
 
-### Passo 4: Enviar para o GitHub e abrir Pull Request
-```bash
-git push -u origin feat/sua-feature
-```
-*No GitHub, abrir o Pull Request apontando para a branch `develop`.*
+4. Abrir o Pull Request no GitHub para revisão e merge.
 
----
+## 4. Ordem sugerida para a apresentação
 
-## 4. Padrão de Commits Semânticos
-
-Utilizamos convenções semânticas para mensagens claras:
-- `feat:` Nova funcionalidade ou classe implementada (ex: `feat: adiciona classe Carro com atributos de portas e combustivel`).
-- `fix:` Correção de bug ou regra de validação (ex: `fix: impede cadastro de veiculo com clienteId inexistente`).
-- `docs:` Alterações na documentação ou UML (ex: `docs: atualiza diagrama de classes no uml.md`).
-- `test:` Inclusão ou ajuste de testes automatizados (ex: `test: adiciona testes de polimorfismo no TestePOO`).
-- `refactor:` Melhorias internas no código sem alterar o comportamento externo.
-
----
-
-## 5. Roteiro Sugerido para a Apresentação em Aula
-
-1. **Introdução (João):** Apresentar a proposta do sistema de clientes e veículos e a arquitetura em camadas (MVC).
-2. **Encapsulamento e Herança de Pessoa (Ícaro):** Explicar os atributos `private` e a relação `Cliente extends Pessoa`.
-3. **Abstração e Herança de Veículo (Alexandre):** Explicar a classe abstrata `Veiculo` e a subclasse `Carro`.
-4. **Polimorfismo e Especialização Moto (Hícaro):** Explicar `Moto extends Veiculo`, o método abstrato `exibirDetalhes()` e como o Java escolhe o método correto em tempo de execução via `List<Veiculo>`.
-5. **Persistência, Repositórios e Conclusão (Natanael / João):** Demonstrar a gravação nos arquivos CSV, ausência de falhas com entradas inválidas e os testes automatizados passando.
+1. João: visão geral do problema, estrutura de pacotes e funcionamento do menu.
+2. Ícaro: explicação de encapsulamento e herança nas classes `Pessoa`, `Cliente`, `PessoaFisica`, `PessoaJuridica` e `Perito`.
+3. Alexandre: apresentação da interface `Seguravel`, das classes `Veiculo` e `Imovel`, e da classe abstrata `Apolice` com `ApoliceAuto`.
+4. Hícaro: demonstração de polimorfismo (sobrescrita em `calcularPremioBase()` e sobrecarga nos serviços) e tratamento das exceções de negócio.
+5. Natanael: explicação da interface genérica `DAO<T>`, armazenamento nos arquivos `.txt` e execução do `TestePOO`.

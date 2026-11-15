@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Camada de Acesso a Dados (DAO) para Clientes (Pessoa Física e Pessoa Jurídica).
- * Implementa a interface genérica DAO<Cliente>.
- */
 public class ClienteDAO implements DAO<Cliente> {
     private final List<Cliente> clientes;
     private final ConexaoBanco conexao;
@@ -94,14 +90,12 @@ public class ClienteDAO implements DAO<Cliente> {
             for (Cliente c : clientes) {
                 if (c instanceof PessoaFisica) {
                     PessoaFisica pf = (PessoaFisica) c;
-                    // Formato: PF;id;nome;email;telefone;endereco;cpf;rg;dataNasc;sexo;estadoCivil
                     bw.write(String.format("PF;%d;%s;%s;%s;%s;%s;%s;%s;%s;%s",
                             pf.getId(), pf.getNome(), pf.getEmail(), pf.getTelefone(), pf.getEndereco(),
                             pf.getCpf(), pf.getRg(), pf.getDataNascimento(), pf.getSexo(),
                             pf.getEstadoCivil() != null ? pf.getEstadoCivil().name() : "SOLTEIRO"));
                 } else if (c instanceof PessoaJuridica) {
                     PessoaJuridica pj = (PessoaJuridica) c;
-                    // Formato: PJ;id;nome;email;telefone;endereco;cnpj;razaoSocial;ie;nomeFantasia;repLegal
                     bw.write(String.format("PJ;%d;%s;%s;%s;%s;%s;%s;%s;%s;%s",
                             pj.getId(), pj.getNome(), pj.getEmail(), pj.getTelefone(), pj.getEndereco(),
                             pj.getCnpj(), pj.getRazaoSocial(), pj.getInscricaoEstadual(),

@@ -2,8 +2,6 @@ package controller;
 
 import exception.ClienteNaoEncontradoException;
 import model.Cliente;
-import model.PessoaFisica;
-import model.PessoaJuridica;
 import model.Veiculo;
 import repository.ClienteDAO;
 import repository.VeiculoDAO;
@@ -11,9 +9,6 @@ import repository.VeiculoDAO;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Controlador responsável pela gestão de Clientes (PF e PJ) e seus Veículos.
- */
 public class ControladorCliente {
     private final ClienteDAO clienteDAO;
     private final VeiculoDAO veiculoDAO;
@@ -62,7 +57,7 @@ public class ControladorCliente {
         if (veiculo == null) {
             throw new IllegalArgumentException("Veículo não pode ser nulo.");
         }
-        buscarPorId(veiculo.getClienteId()); // Garante que o cliente existe
+        buscarPorId(veiculo.getClienteId());
         veiculoDAO.salvar(veiculo);
     }
 

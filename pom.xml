@@ -15,7 +15,6 @@
         <exec.mainClass>Main</exec.mainClass>
     </properties>
 
-    <!-- Mantém a estrutura original do repositório. -->
     <build>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <testSourceDirectory>${project.basedir}/test</testSourceDirectory>

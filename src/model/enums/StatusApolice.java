@@ -1,8 +1,5 @@
 package model.enums;
 
-/**
- * Representa os possíveis status de uma apólice no sistema.
- */
 public enum StatusApolice {
     PROPOSTA("Proposta em Análise"),
     ATIVA("Apólice Ativa"),

@@ -1,15 +1,11 @@
 package model;
 
 import model.enums.StatusApolice;
+import model.enums.TipoCobertura;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe Abstrata base que representa uma Apólice de Seguro.
- * Define a estrutura comum para apólices de Automóvel, Residencial e Vida,
- * aplicando o conceito de abstração e polimorfismo em POO.
- */
 public abstract class Apolice implements Identificavel {
     private int id;
     private String numeroApolice;
@@ -141,6 +137,11 @@ public abstract class Apolice implements Identificavel {
         }
     }
 
+    public void adicionarCobertura(String nome, double valorLimite, double valorFranquia, TipoCobertura tipo) {
+        int novoId = this.coberturas.size() + 1;
+        this.coberturas.add(new Cobertura(novoId, nome, nome, valorLimite, valorFranquia, tipo));
+    }
+
     public void adicionarPagamento(Pagamento pagamento) {
         if (pagamento != null) {
             this.pagamentos.add(pagamento);
@@ -153,34 +154,21 @@ public abstract class Apolice implements Identificavel {
         }
     }
 
-    /**
-     * Verifica se a apólice está expirada com base na data atual.
-     */
     public boolean isVencida() {
         return dataFimVigencia != null && LocalDate.now().isAfter(dataFimVigencia);
     }
 
-    /**
-     * Método Abstrato que calcula o prêmio base de acordo com as particularidades
-     * do objeto segurado na subclasse (Veículo, Imóvel ou Vida).
-     */
     public abstract double calcularPremioBase();
 
-    /**
-     * Retorna o tipo da apólice (Auto, Residencial, Vida).
-     */
     public abstract String getTipoApolice();
 
-    /**
-     * Exibe os detalhes específicos da apólice.
-     */
     public abstract void exibirDetalhesApolice();
 
     @Override
     public String toString() {
         String clienteNome = (cliente != null) ? cliente.getNome() : "Não informado";
-        return String.format("[%s] N°: %s | Cliente: %s | Prêmio: R$ %.2f | Vigência: %s até %s | Status: %s",
-                getTipoApolice(), numeroApolice, clienteNome, valorPremio,
+        return String.format("ID %d - [%s] N° %s | Segurado: %s | Prêmio: R$ %.2f | Vigência: %s a %s | %s",
+                id, getTipoApolice(), numeroApolice, clienteNome, valorPremio,
                 dataInicioVigencia, dataFimVigencia, status.getDescricao());
     }
 }

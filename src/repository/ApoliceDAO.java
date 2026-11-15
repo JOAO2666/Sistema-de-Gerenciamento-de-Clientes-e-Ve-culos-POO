@@ -11,11 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Camada de Acesso a Dados (DAO) para Apólices de Seguros.
- * Gerencia apólices de Auto, Residencial e Vida de forma polimórfica.
- * Implementa a interface genérica DAO<Apolice>.
- */
 public class ApoliceDAO implements DAO<Apolice> {
     private final List<Apolice> apolices;
     private final ConexaoBanco conexao;
@@ -115,7 +110,6 @@ public class ApoliceDAO implements DAO<Apolice> {
                 if (a instanceof ApoliceAuto) {
                     ApoliceAuto auto = (ApoliceAuto) a;
                     int veiculoId = auto.getVeiculo() != null ? auto.getVeiculo().getId() : 0;
-                    // AUTO;id;numero;clienteId;premio;franquia;inicio;fim;status;veiculoId;classeBonus;perfil
                     bw.write(String.format("AUTO;%d;%s;%d;%.2f;%.2f;%s;%s;%s;%d;%d;%s",
                             auto.getId(), auto.getNumeroApolice(), clienteId,
                             auto.getValorPremio(), auto.getValorFranquia(),
@@ -124,18 +118,24 @@ public class ApoliceDAO implements DAO<Apolice> {
                             auto.getPerfilPrincipalCondutor() != null ? auto.getPerfilPrincipalCondutor() : "Padrao"));
                 } else if (a instanceof ApoliceResidencial) {
                     ApoliceResidencial res = (ApoliceResidencial) a;
-                    int imovelId = res.getImovel() != null ? res.getImovel().getId() : 0;
-                    // RESIDENCIAL;id;numero;clienteId;premio;franquia;inicio;fim;status;imovelId;tipoResidencia;possuiAlarme
-                    bw.write(String.format("RESIDENCIAL;%d;%s;%d;%.2f;%.2f;%s;%s;%s;%d;%s;%b",
+                    Imovel im = res.getImovel();
+                    int imovelId = im != null ? im.getId() : 0;
+                    String cep = im != null && im.getCep() != null ? im.getCep() : "00000-000";
+                    String end = im != null && im.getEndereco() != null ? im.getEndereco().replace(";", ",") : "Endereço Cadastrado";
+                    String cid = im != null && im.getCidade() != null ? im.getCidade() : "Cidade";
+                    String uf = im != null && im.getEstado() != null ? im.getEstado() : "UF";
+                    double valMerc = im != null ? im.getValorMercado() : 300000.0;
+                    double area = im != null ? im.getAreaM2() : 100.0;
+                    bw.write(String.format("RESIDENCIAL;%d;%s;%d;%.2f;%.2f;%s;%s;%s;%d;%s;%b;%s;%s;%s;%s;%.2f;%.2f",
                             res.getId(), res.getNumeroApolice(), clienteId,
                             res.getValorPremio(), res.getValorFranquia(),
                             inicioStr, fimStr, statusStr,
                             imovelId,
                             res.getTipoResidencia() != null ? res.getTipoResidencia() : "Casa",
-                            res.isPossuiAlarme()));
+                            res.isPossuiAlarme(),
+                            cep, end, cid, uf, valMerc, area));
                 } else if (a instanceof ApoliceDeVida) {
                     ApoliceDeVida vida = (ApoliceDeVida) a;
-                    // VIDA;id;numero;clienteId;premio;franquia;inicio;fim;status;capitalSegurado;fumante;idade;beneficiarios
                     String ben = String.join(",", vida.getBeneficiarios());
                     bw.write(String.format("VIDA;%d;%s;%d;%.2f;%.2f;%s;%s;%s;%.2f;%b;%d;%s",
                             vida.getId(), vida.getNumeroApolice(), clienteId,
@@ -185,8 +185,14 @@ public class ApoliceDAO implements DAO<Apolice> {
                     int imovelId = Integer.parseInt(p[9]);
                     String tipoRes = p[10];
                     boolean alarme = Boolean.parseBoolean(p[11]);
+                    String cep = p.length >= 18 ? p[12] : "00000-000";
+                    String end = p.length >= 18 ? p[13] : "Endereço Cadastrado";
+                    String cid = p.length >= 18 ? p[14] : "Cidade";
+                    String uf = p.length >= 18 ? p[15] : "UF";
+                    double valMerc = p.length >= 18 ? Double.parseDouble(p[16].replace(",", ".")) : 300000.0;
+                    double area = p.length >= 18 ? Double.parseDouble(p[17].replace(",", ".")) : 100.0;
 
-                    Imovel imovel = new Imovel(imovelId, clienteId, "00000-000", "Endereço Cadastrado", "Cidade", "UF", 300000.0, 100.0, "Alvenaria", alarme);
+                    Imovel imovel = new Imovel(imovelId, clienteId, cep, end, cid, uf, valMerc, area, "Alvenaria", alarme);
                     ApoliceResidencial res = new ApoliceResidencial(id, num, cliente, premio, franquia, inicio, fim, imovel, tipoRes, alarme);
                     res.setStatus(status);
                     apolices.add(res);

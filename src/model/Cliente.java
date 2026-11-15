@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Classe Abstrata base que representa um Cliente do sistema de seguros.
- * Implementa a interface Identificavel e define métodos abstratos para especializações.
- */
 public abstract class Cliente implements Identificavel {
     private int id;
     private String nome;
@@ -66,19 +62,10 @@ public abstract class Cliente implements Identificavel {
         this.endereco = endereco;
     }
 
-    /**
-     * Retorna o documento principal do cliente (CPF para Pessoa Física, CNPJ para Pessoa Jurídica).
-     */
     public abstract String getDocumentoPrincipal();
 
-    /**
-     * Retorna a descrição do tipo de cliente.
-     */
     public abstract String getTipoCliente();
 
-    /**
-     * Exibe o resumo formatado dos dados do cliente.
-     */
     public abstract String exibirResumo();
 
     @Override

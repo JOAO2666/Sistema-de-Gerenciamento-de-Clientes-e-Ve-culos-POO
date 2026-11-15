@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Representa um veículo no sistema, que pode ser segurado por uma apólice de auto.
- * Implementa Identificavel e Seguravel.
- */
 public class Veiculo implements Identificavel, Seguravel {
     private int id;
     private int clienteId;
@@ -116,7 +112,7 @@ public class Veiculo implements Identificavel, Seguravel {
 
     @Override
     public String getDescricaoCompleta() {
-        return String.format("Veículo [ID: %d] %s %s (%d) | Placa: %s | FIPE: R$ %.2f",
+        return String.format("ID %d - %s %s (%d) | Placa: %s | FIPE: R$ %.2f",
                 id, marca, modelo, ano, placa, valorFipe);
     }
 

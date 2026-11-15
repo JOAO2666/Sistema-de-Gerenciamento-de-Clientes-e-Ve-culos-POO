@@ -1,8 +1,5 @@
 package model;
 
-/**
- * Representa uma oficina conveniada para reparos em caso de sinistros de veículos.
- */
 public class OficinaParceira implements Identificavel {
     private int id;
     private String nomeFantasia;
@@ -10,7 +7,7 @@ public class OficinaParceira implements Identificavel {
     private String endereco;
     private String telefone;
     private String responsavel;
-    private double descontoConvenio; // Percentual de desconto (ex: 15.0 para 15%)
+    private double descontoConvenio;
 
     public OficinaParceira() {}
 

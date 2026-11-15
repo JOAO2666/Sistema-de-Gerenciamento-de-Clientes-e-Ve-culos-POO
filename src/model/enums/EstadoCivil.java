@@ -1,8 +1,5 @@
 package model.enums;
 
-/**
- * Representa o estado civil de uma pessoa física.
- */
 public enum EstadoCivil {
     SOLTEIRO("Solteiro(a)"),
     CASADO("Casado(a)"),

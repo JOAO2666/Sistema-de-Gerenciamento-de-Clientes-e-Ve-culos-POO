@@ -2,9 +2,6 @@ package model;
 
 import model.enums.TipoCobertura;
 
-/**
- * Representa uma cobertura contratada ou disponível para uma apólice.
- */
 public class Cobertura implements Identificavel {
     private int id;
     private String nome;

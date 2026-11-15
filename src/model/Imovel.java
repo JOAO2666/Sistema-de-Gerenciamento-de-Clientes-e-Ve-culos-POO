@@ -1,9 +1,5 @@
 package model;
 
-/**
- * Representa um imóvel segurável no sistema por uma apólice residencial.
- * Implementa Identificavel e Seguravel.
- */
 public class Imovel implements Identificavel, Seguravel {
     private int id;
     private int clienteId;
@@ -127,8 +123,8 @@ public class Imovel implements Identificavel, Seguravel {
 
     @Override
     public String getDescricaoCompleta() {
-        return String.format("Imóvel [ID: %d] %s, %s - %s/%s | Área: %.1fm² | Tipo: %s | Valor: R$ %.2f",
-                id, endereco, cep, cidade, estado, areaM2, tipoConstrucao, valorMercado);
+        return String.format("%s, CEP %s - %s/%s | %.1f m² (%s) | R$ %.2f",
+                endereco, cep, cidade, estado, areaM2, tipoConstrucao, valorMercado);
     }
 
     @Override

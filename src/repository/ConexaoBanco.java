@@ -1,6 +1,5 @@
 package repository;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,10 +7,6 @@ import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Classe responsável por gerenciar a "conexão" e o repositório centralizado de dados do sistema.
- * Implementa o padrão Singleton e gerencia contadores de IDs e diretórios de dados.
- */
 public class ConexaoBanco {
     private static ConexaoBanco instancia;
     private final Path diretorioDados;
@@ -40,17 +35,11 @@ public class ConexaoBanco {
         }
     }
 
-    /**
-     * Gera um novo ID único para a tabela / entidade especificada.
-     */
     public synchronized int getProximoId(String tabela) {
         contadoresId.putIfAbsent(tabela, new AtomicInteger(1));
         return contadoresId.get(tabela).getAndIncrement();
     }
 
-    /**
-     * Atualiza o contador caso um ID maior já tenha sido carregado.
-     */
     public synchronized void sincronizarIdMaximo(String tabela, int id) {
         contadoresId.compute(tabela, (k, v) -> {
             if (v == null) {

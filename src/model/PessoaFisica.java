@@ -2,9 +2,6 @@ package model;
 
 import model.enums.EstadoCivil;
 
-/**
- * Representa um cliente Pessoa Física. Herda de Cliente.
- */
 public class PessoaFisica extends Cliente {
     private String cpf;
     private String rg;
@@ -78,7 +75,7 @@ public class PessoaFisica extends Cliente {
 
     @Override
     public String exibirResumo() {
-        return String.format("PF: %s (CPF: %s) | Nasc: %s | Sexo: %s | Estado Civil: %s | Contato: %s / %s",
-                getNome(), cpf, dataNascimento, sexo, estadoCivil.getDescricao(), getTelefone(), getEmail());
+        return String.format("ID %d - PF: %s | CPF: %s | Nasc: %s | Sexo: %s | Est. Civil: %s | Tel: %s | %s",
+                getId(), getNome(), cpf, dataNascimento, sexo, estadoCivil.getDescricao(), getTelefone(), getEmail());
     }
 }

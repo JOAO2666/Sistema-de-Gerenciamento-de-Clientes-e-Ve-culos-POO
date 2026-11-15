@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Camada de Acesso a Dados (DAO) para Veículos.
- * Implementa a interface genérica DAO<Veiculo>.
- */
 public class VeiculoDAO implements DAO<Veiculo> {
     private final List<Veiculo> veiculos;
     private final ConexaoBanco conexao;
@@ -98,7 +94,6 @@ public class VeiculoDAO implements DAO<Veiculo> {
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Veiculo v : veiculos) {
-                // Formato: id;clienteId;marca;modelo;ano;placa;renavam;chassi;valorFipe
                 bw.write(String.format("%d;%d;%s;%s;%d;%s;%s;%s;%.2f",
                         v.getId(), v.getClienteId(), v.getMarca(), v.getModelo(),
                         v.getAno(), v.getPlaca(), v.getRenavam(), v.getChassi(), v.getValorFipe()));

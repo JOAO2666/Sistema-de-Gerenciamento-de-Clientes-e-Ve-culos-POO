@@ -1,111 +1,95 @@
-# Sistema de Gerenciamento de Clientes, Veículos e Seguros (POO)
+# Sistema de Gerenciamento de Clientes, Veículos e Seguros
 
-Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos (POO)**, aplicando com rigor os pilares fundamentais da engenharia de software orientada a objetos: **Abstração, Encapsulamento, Herança e Polimorfismo**, além de **Interfaces, Generics, Exceções Personalizadas e Arquitetura em Camadas (MVC / DAO)**.
+Projeto desenvolvido em Java para a disciplina de Programação Orientada a Objetos (POO), ministrada pela Prof.ª Ana Emília de Melo Queiroz (UNIVASF).
 
----
+## Sobre o projeto
 
-## Arquitetura do Sistema
+O sistema gerencia o cadastro de clientes (pessoa física e pessoa jurídica), seus bens (veículos e imóveis), a emissão de apólices de seguro (automóvel, residencial e vida), o controle de parcelas e o registro de sinistros.
 
-O projeto está estruturado em pacotes seguindo a separação de responsabilidades:
+Os dados ficam salvos em arquivos `.txt` na pasta `data/`, mantendo os cadastros entre as execuções do programa pelo terminal.
 
+## Funcionalidades
+
+* Cadastro, listagem, busca por ID/documento, atualização e remoção de clientes (PF e PJ)
+* Cadastro e vínculo de veículos e imóveis aos clientes
+* Emissão de apólices de seguro (auto, residencial e vida) com cálculo de prêmio e geração de parcelas
+* Consulta e baixa de pagamentos de parcelas
+* Abertura de sinistros, designação de perito e liquidação de indenização
+* Relatório geral com totais de clientes, apólices, arrecadação e sinistros
+
+## Estrutura do projeto
+
+O código está dividido nos seguintes pacotes dentro de `src/`:
+
+* `model`: classes de domínio (`Pessoa`, `Cliente`, `PessoaFisica`, `PessoaJuridica`, `Apolice`, `ApoliceAuto`, `ApoliceResidencial`, `ApoliceDeVida`, `Veiculo`, `Imovel`, `Sinistro`, `Pagamento`, `Cobertura`, `Perito`, `OficinaParceira`) e as interfaces `Identificavel` e `Seguravel`
+* `model.enums`: enumerações usadas nos cadastros (`EstadoCivil`, `StatusApolice`, `TipoCobertura`, `TipoSinistro`)
+* `repository`: interface genérica `DAO<T>`, controle de arquivos em `ConexaoBanco` e classes DAO (`ClienteDAO`, `VeiculoDAO`, `ApoliceDAO`, `PagamentoDAO`, `SinistroDAO`)
+* `service`: interfaces e classes com as regras de negócio de cálculo de prêmio, validação de propostas, emissão de apólices e análise de sinistros
+* `controller`: `ControladorCliente` e `ControladorApolice`, que ligam o menu de console aos serviços e DAOs
+* `view`: `MenuPrincipal`, responsável pela leitura de dados e exibição no terminal
+* `exception`: exceções específicas do domínio (`ApoliceVencidaException`, `ClienteNaoEncontradoException`, `SinistroJaRegistradoException`, `ValorPremioInvalidoException`)
+
+Na pasta `test/` fica a classe `TestePOO`, com os testes automatizados das regras do sistema, e na pasta `docs/` estão os documentos de requisitos, planejamento da equipe e diagramas UML.
+
+## Conceitos de POO utilizados
+
+* Encapsulamento: atributos privados nas classes de modelo, com acesso e validação feitos pelos construtores, getters e setters.
+* Herança e classes abstratas:
+  * `Cliente` (abstrata) é estendida por `PessoaFisica` e `PessoaJuridica`;
+  * `Apolice` (abstrata) é estendida por `ApoliceAuto`, `ApoliceResidencial` e `ApoliceDeVida`;
+  * `Pessoa` (abstrata) é estendida por `Perito`.
+* Interfaces e Generics:
+  * `Identificavel` para entidades que possuem ID;
+  * `Seguravel` implementada por `Veiculo` e `Imovel`;
+  * `DAO<T extends Identificavel>` usando Generics para padronizar as operações de salvar, buscar, listar, atualizar e deletar;
+  * `ICalculadoraDePremio` e `IValidadorDeProposta` na camada de serviço.
+* Polimorfismo:
+  * Sobrescrita (subtipo): métodos como `calcularPremioBase()` nas subclasses de `Apolice`, `getDocumentoPrincipal()` e `exibirResumo()` nas subclasses de `Cliente` e `Pessoa`, e `getValorAvaliado()` em `Seguravel`;
+  * Sobrecarga (overload): métodos com o mesmo nome e assinaturas diferentes, como `calcularPremio(Apolice)` e `calcularPremio(Apolice, double)` em `CalculadoraDePremioService`, `emitirApolice` em `EmissorDeApoliceService`, `adicionarCobertura` em `Apolice` e `registrarQuitacao` em `Pagamento`.
+* Tratamento de exceções: uso de exceções checadas para impedir operações inválidas, como abrir sinistro em apólice vencida, cadastrar sinistro duplicado ou calcular prêmio com valor inválido.
+
+## Como compilar e executar
+
+É necessário ter o Java JDK 11 ou superior instalado.
+
+### No Linux ou macOS
+
+Compilar os arquivos do projeto e de teste:
+
+```bash
+mkdir -p bin
+javac -encoding UTF-8 -d bin $(find src test -name "*.java")
 ```
-src/
-├── model/                     # Camada de Domínio (Entidades e Interfaces)
-│   ├── Identificavel.java     # [INTERFACE] Contrato para entidades com ID
-│   ├── Seguravel.java         # [INTERFACE] Contrato para bens seguráveis
-│   ├── Cliente.java           # [CLASSE ABSTRATA] Base para clientes
-│   ├── PessoaFisica.java      # Especialização de Cliente (CPF, RG, Estado Civil)
-│   ├── PessoaJuridica.java    # Especialização de Cliente (CNPJ, Razão Social, IE)
-│   ├── Apolice.java           # [CLASSE ABSTRATA] Base para apólices de seguro
-│   ├── ApoliceAuto.java       # Especialização para seguro de veículos
-│   ├── ApoliceResidencial.java# Especialização para seguro de imóveis
-│   ├── ApoliceDeVida.java     # Especialização para seguro de vida
-│   ├── Veiculo.java           # Bem segurável (Placa, FIPE, Renavam)
-│   ├── Imovel.java            # Bem segurável (CEP, Endereço, Valor Mercado)
-│   ├── Sinistro.java          # Registro de sinistros/ocorrências
-│   ├── Perito.java            # Profissional avaliador de sinistros
-│   ├── OficinaParceira.java   # Oficina conveniada para reparos
-│   ├── Pagamento.java         # Parcelas financeiras da apólice
-│   ├── Cobertura.java         # Coberturas e capitais segurados
-│   └── enums/
-│       ├── StatusApolice.java # PROPOSTA, ATIVA, SUSPENSA, CANCELADA, EXPIRADA
-│       ├── TipoCobertura.java # Tipos de coberturas securitárias
-│       ├── TipoSinistro.java  # Colisão, Roubo, Incêndio, Alagamento, etc.
-│       └── EstadoCivil.java   # Solteiro, Casado, Divorciado, etc.
-├── service/                   # Camada de Serviços / Regras de Negócio
-│   ├── ICalculadoraDePremio.java     # [INTERFACE] Contrato de cálculo de prêmios
-│   ├── IValidadorDeProposta.java     # [INTERFACE] Contrato de validação
-│   ├── CalculadoraDePremioService.java # Cálculo atuarial com polimorfismo e IOF
-│   ├── EmissorDeApoliceService.java    # Emissão e geração de parcelas
-│   ├── ProcessadorDeSinistroService.java # Análise de sinistro, perícia e liquidação
-│   └── ValidadorDePropostaService.java # Validação de regras e integridade
-├── repository/                # Camada de Persistência (DAO)
-│   ├── DAO.java               # [INTERFACE GENÉRICA] Contrato CRUD
-│   ├── ConexaoBanco.java      # Gerenciamento de conexões, IDs e persistência
-│   ├── ClienteDAO.java        # Persistência de PF e PJ
-│   ├── ApoliceDAO.java        # Persistência polimórfica de apólices
-│   ├── SinistroDAO.java       # Persistência de sinistros
-│   ├── VeiculoDAO.java        # Persistência de veículos
-│   └── PagamentoDAO.java      # Persistência de pagamentos/parcelas
-├── exception/                 # Exceções Personalizadas
-│   ├── ApoliceVencidaException.java
-│   ├── ValorPremioInvalidoException.java
-│   ├── ClienteNaoEncontradoException.java
-│   └── SinistroJaRegistradoException.java
-├── controller/                # Camada de Controle
-│   ├── ControladorCliente.java
-│   └── ControladorApolice.java
-├── view/                      # Camada de Apresentação (Console UI)
-│   └── MenuPrincipal.java
-└── Main.java                  # Ponto de entrada e injeção de dependências
+
+Executar o menu principal:
+
+```bash
+java -cp bin Main
 ```
 
----
+Executar os testes:
 
-## Conceitos de POO Aplicados
+```bash
+java -cp bin TestePOO
+```
 
-###  Classes Abstratas
- **`Cliente`**: Define atributos essenciais e métodos abstratos (`getDocumentoPrincipal()`, `getTipoCliente()`, `exibirResumo()`) implementados pelas subclasses `PessoaFisica` e `PessoaJuridica`.
- **`Apolice`**: Define atributos comuns e o método abstrato `calcularPremioBase()`, `getTipoApolice()` e `exibirDetalhesApolice()`. Não pode ser instanciada diretamente.
+### No Windows (PowerShell)
 
-### Interfaces
- **`Identificavel`**: Padroniza o acesso a IDs (`getId()`, `setId(int)`).
- **`Seguravel`**: Define os métodos `getValorAvaliado()`, `getIdentificador()` e `getDescricaoCompleta()` para bens que podem ter apólice (`Veiculo`, `Imovel`).
- **`DAO<T>`**: Interface genérica para desacoplar a camada de persistência com métodos CRUD.
- **`ICalculadoraDePremio`** e **`IValidadorDeProposta`**: Interfaces de serviços para inversão de dependência (SOLID).
+Compilar:
 
-### Polimorfismo
- O cálculo do prêmio na `CalculadoraDePremioService` invoca `apolice.calcularPremioBase()`, que executa regras diferentes em tempo de execução para **`ApoliceAuto`**, **`ApoliceResidencial`** ou **`ApoliceDeVida`**.
- O repositório `ApoliceDAO` e o `ClienteDAO` tratam coleções de tipos genéricos e subclasses polimorficamente.
+```powershell
+New-Item -ItemType Directory -Force -Path bin | Out-Null
+javac -encoding UTF-8 -d bin (Get-ChildItem -Path src, test -Filter *.java -Recurse | Select-Object -ExpandProperty FullName)
+```
 
-### Encapsulamento
- Todos os atributos são privados (`private`), acessados e modificados via getters e setters com validação de consistência.
+Executar o menu principal:
 
-### Tratamento de Exceções Personalizadas
- `ApoliceVencidaException`: Lançada ao tentar acionar sinistro em apólice expirada.
- `ValorPremioInvalidoException`: Lançada quando o cálculo ou valor contratual é nulo ou negativo.
- `ClienteNaoEncontradoException`: Lançada ao buscar por IDs ou documentos inexistentes.
- `SinistroJaRegistradoException`: Lançada ao tentar registrar evento duplicado para a mesma apólice e data.
+```powershell
+java -cp bin Main
+```
 
----
+Executar os testes:
 
-## Como Compilar e Executar
-
-### Pré-requisitos
- Java JDK 11 ou superior instalado
-
-### Compilação e Execução via Terminal
-
- **Compilar o projeto**:
-   ```bash
-   javac -encoding UTF-8 -d bin (Get-ChildItem -Path src, test -Filter *.java -Recurse | Select-Object -ExpandProperty FullName)
-   ```
-
- **Executar a aplicação interativa**:
-   ```bash
-   java -cp bin Main
-   ```
-  **Executar a suíte de testes automatizados**:
-   ```bash
-   java -cp bin TestePOO
-   ```
+```powershell
+java -cp bin TestePOO
+```

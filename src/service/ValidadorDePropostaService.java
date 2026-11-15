@@ -4,9 +4,6 @@ import exception.ClienteNaoEncontradoException;
 import exception.ValorPremioInvalidoException;
 import model.*;
 
-/**
- * Serviço responsável por validar a integridade técnica e contratual de uma proposta.
- */
 public class ValidadorDePropostaService implements IValidadorDeProposta {
 
     @Override
@@ -15,12 +12,10 @@ public class ValidadorDePropostaService implements IValidadorDeProposta {
             throw new IllegalArgumentException("A proposta de apólice não pode ser nula.");
         }
 
-        // 1. Validação de Cliente
         if (apolice.getCliente() == null || apolice.getCliente().getId() <= 0) {
             throw new ClienteNaoEncontradoException("Cliente não informado ou não cadastrado para a proposta.");
         }
 
-        // 2. Validação de Vigência
         if (apolice.getDataInicioVigencia() == null || apolice.getDataFimVigencia() == null) {
             throw new IllegalArgumentException("As datas de início e fim de vigência são obrigatórias.");
         }
@@ -29,7 +24,6 @@ public class ValidadorDePropostaService implements IValidadorDeProposta {
             throw new IllegalArgumentException("A data de término da vigência não pode ser anterior à data de início.");
         }
 
-        // 3. Validação de Regras Específicas por Tipo de Apólice (Polimorfismo)
         if (apolice instanceof ApoliceAuto) {
             ApoliceAuto auto = (ApoliceAuto) apolice;
             if (auto.getVeiculo() == null) {

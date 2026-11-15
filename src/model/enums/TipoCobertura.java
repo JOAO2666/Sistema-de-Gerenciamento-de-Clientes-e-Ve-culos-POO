@@ -1,8 +1,5 @@
 package model.enums;
 
-/**
- * Representa os tipos de cobertura oferecidos nas apólices.
- */
 public enum TipoCobertura {
     BASICA("Cobertura Básica"),
     COMPREENSIVA("Cobertura Compreensiva (Colisão, Incêndio e Roubo)"),

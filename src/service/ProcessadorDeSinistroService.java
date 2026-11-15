@@ -14,10 +14,6 @@ import repository.SinistroDAO;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Serviço responsável pela recepção, validação, perícia e liquidação de sinistros.
- * Garante o cumprimento de regras de negócio como verificação de vigência e duplicidade.
- */
 public class ProcessadorDeSinistroService {
     private final ApoliceDAO apoliceDAO;
     private final SinistroDAO sinistroDAO;
@@ -27,9 +23,12 @@ public class ProcessadorDeSinistroService {
         this.sinistroDAO = sinistroDAO;
     }
 
-    /**
-     * Registra a abertura de um sinistro após validar a apólice.
-     */
+    public Sinistro registrarSinistro(int apoliceId, TipoSinistro tipo,
+                                      String descricao, double valorEstimadoPrejuizo)
+            throws ApoliceVencidaException, SinistroJaRegistradoException {
+        return registrarSinistro(apoliceId, LocalDate.now(), tipo, descricao, valorEstimadoPrejuizo);
+    }
+
     public Sinistro registrarSinistro(int apoliceId, LocalDate dataOcorrencia, TipoSinistro tipo,
                                       String descricao, double valorEstimadoPrejuizo)
             throws ApoliceVencidaException, SinistroJaRegistradoException {
@@ -39,7 +38,6 @@ public class ProcessadorDeSinistroService {
             throw new IllegalArgumentException("Apólice não encontrada com o ID: " + apoliceId);
         }
 
-        // 1. Verificação de vigência da apólice
         if (apolice.getStatus() == StatusApolice.EXPIRADA || apolice.isVencida()) {
             throw new ApoliceVencidaException("A apólice " + apolice.getNumeroApolice() +
                     " está expirada / vencida desde " + apolice.getDataFimVigencia() + ".");
@@ -50,7 +48,6 @@ public class ProcessadorDeSinistroService {
                     apolice.getStatus().getDescricao() + ").");
         }
 
-        // 2. Verificação de sinistro duplicado para a mesma apólice, data e tipo
         List<Sinistro> existentes = sinistroDAO.listarPorApolice(apoliceId);
         for (Sinistro s : existentes) {
             if (s.getDataOcorrencia().equals(dataOcorrencia) && s.getTipoSinistro() == tipo) {
@@ -59,7 +56,6 @@ public class ProcessadorDeSinistroService {
             }
         }
 
-        // 3. Criação e persistência do novo sinistro
         String protocolo = "SIN-" + System.currentTimeMillis() % 1000000;
         Sinistro novoSinistro = new Sinistro(0, protocolo, apoliceId, dataOcorrencia, tipo, descricao, valorEstimadoPrejuizo);
         sinistroDAO.salvar(novoSinistro);
@@ -68,9 +64,6 @@ public class ProcessadorDeSinistroService {
         return novoSinistro;
     }
 
-    /**
-     * Atualiza o sinistro com laudo pericial e oficina parceira designada.
-     */
     public void analisarELaudarSinistro(int sinistroId, Perito perito, OficinaParceira oficina,
                                        String laudo, double valorAprovado) {
         Sinistro s = sinistroDAO.buscarPorId(sinistroId);
@@ -82,7 +75,6 @@ public class ProcessadorDeSinistroService {
         s.setOficinaParceira(oficina);
         s.setLaudoPericial(laudo);
 
-        // Aplica franquia contratada da apólice
         Apolice apolice = apoliceDAO.buscarPorId(s.getApoliceId());
         double franquia = (apolice != null) ? apolice.getValorFranquia() : 0.0;
 
@@ -93,9 +85,6 @@ public class ProcessadorDeSinistroService {
         sinistroDAO.atualizar(s);
     }
 
-    /**
-     * Conclui a liquidação financeira do sinistro.
-     */
     public void liquidarSinistro(int sinistroId) {
         Sinistro s = sinistroDAO.buscarPorId(sinistroId);
         if (s == null) {

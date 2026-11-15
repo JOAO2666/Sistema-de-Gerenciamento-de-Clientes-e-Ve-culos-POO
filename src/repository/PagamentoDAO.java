@@ -9,10 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Camada de Acesso a Dados (DAO) para Pagamentos e Parcelas de Apólice.
- * Implementa a interface genérica DAO<Pagamento>.
- */
 public class PagamentoDAO implements DAO<Pagamento> {
     private final List<Pagamento> pagamentos;
     private final ConexaoBanco conexao;
@@ -87,7 +83,6 @@ public class PagamentoDAO implements DAO<Pagamento> {
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Pagamento p : pagamentos) {
-                // Formato: id;apoliceId;numeroParcela;totalParcelas;valor;dataVencimento;dataPagamento;pago;formaPagamento
                 bw.write(String.format("%d;%d;%d;%d;%.2f;%s;%s;%b;%s",
                         p.getId(),
                         p.getApoliceId(),

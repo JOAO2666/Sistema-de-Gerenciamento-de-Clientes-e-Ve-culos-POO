@@ -1,7 +1,5 @@
 package repository;
 
-import model.OficinaParceira;
-import model.Perito;
 import model.Sinistro;
 import model.enums.TipoSinistro;
 
@@ -13,10 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Camada de Acesso a Dados (DAO) para Sinistros.
- * Implementa a interface genérica DAO<Sinistro>.
- */
 public class SinistroDAO implements DAO<Sinistro> {
     private final List<Sinistro> sinistros;
     private final ConexaoBanco conexao;
@@ -104,7 +98,6 @@ public class SinistroDAO implements DAO<Sinistro> {
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Sinistro s : sinistros) {
-                // Formato: id;protocolo;apoliceId;dataOcorrencia;dataRegistro;tipoSinistro;descricao;prejuizo;indenizado;status;laudo
                 bw.write(String.format("%d;%s;%d;%s;%s;%s;%s;%.2f;%.2f;%s;%s",
                         s.getId(),
                         s.getNumeroProtocolo(),

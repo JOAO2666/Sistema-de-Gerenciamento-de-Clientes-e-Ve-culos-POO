@@ -1,8 +1,5 @@
 package model.enums;
 
-/**
- * Representa as categorias de sinistros que podem ser acionados.
- */
 public enum TipoSinistro {
     COLISAO("Colisão de Veículo"),
     ROUBO_FURTO("Roubo ou Furto"),
