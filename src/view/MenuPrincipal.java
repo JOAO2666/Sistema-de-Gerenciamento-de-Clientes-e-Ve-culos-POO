@@ -38,7 +38,7 @@ public class MenuPrincipal {
             System.out.println("6 - Relatório geral");
             System.out.println("7 - Carregar dados de exemplo");
             System.out.println("0 - Sair");
-            System.out.print("Opção: ");
+            System.out.println("Opção:");
 
             opcao = lerInteiro();
 
@@ -83,7 +83,7 @@ public class MenuPrincipal {
         System.out.println("6 - Atualizar cliente");
         System.out.println("7 - Remover cliente");
         System.out.println("0 - Voltar");
-        System.out.print("Opção: ");
+        System.out.println("Opção:");
         int op = lerInteiro();
 
         switch (op) {
@@ -118,24 +118,24 @@ public class MenuPrincipal {
 
     private void cadastrarPF() {
         System.out.println("\nNovo cadastro - Pessoa Física");
-        System.out.print("Nome: ");
+        System.out.println("Nome:");
         String nome = scanner.nextLine().trim();
-        System.out.print("E-mail: ");
+        System.out.println("E-mail:");
         String email = scanner.nextLine().trim();
-        System.out.print("Telefone: ");
+        System.out.println("Telefone:");
         String tel = scanner.nextLine().trim();
-        System.out.print("Endereço: ");
+        System.out.println("Endereço:");
         String end = scanner.nextLine().trim();
-        System.out.print("CPF: ");
+        System.out.println("CPF:");
         String cpf = scanner.nextLine().trim();
-        System.out.print("RG: ");
+        System.out.println("RG:");
         String rg = scanner.nextLine().trim();
-        System.out.print("Data de nascimento (dd/mm/aaaa): ");
+        System.out.println("Data de nascimento (dd/mm/aaaa):");
         String nasc = scanner.nextLine().trim();
-        System.out.print("Sexo (M/F): ");
+        System.out.println("Sexo (M/F):");
         String sexo = scanner.nextLine().trim();
 
-        System.out.println("Estado civil (1-Solteiro, 2-Casado, 3-Divorciado, 4-Viúvo, 5-União Estável): ");
+        System.out.println("Estado civil (1-Solteiro, 2-Casado, 3-Divorciado, 4-Viúvo, 5-União Estável):");
         int ecOp = lerInteiro();
         EstadoCivil ec = EstadoCivil.SOLTEIRO;
         if (ecOp == 2) ec = EstadoCivil.CASADO;
@@ -154,21 +154,21 @@ public class MenuPrincipal {
 
     private void cadastrarPJ() {
         System.out.println("\nNovo cadastro - Pessoa Jurídica");
-        System.out.print("Nome fantasia: ");
+        System.out.println("Nome fantasia:");
         String nome = scanner.nextLine().trim();
-        System.out.print("Razão social: ");
+        System.out.println("Razão social:");
         String razao = scanner.nextLine().trim();
-        System.out.print("CNPJ: ");
+        System.out.println("CNPJ:");
         String cnpj = scanner.nextLine().trim();
-        System.out.print("Inscrição estadual: ");
+        System.out.println("Inscrição estadual:");
         String ie = scanner.nextLine().trim();
-        System.out.print("Representante legal: ");
+        System.out.println("Representante legal:");
         String rep = scanner.nextLine().trim();
-        System.out.print("E-mail: ");
+        System.out.println("E-mail:");
         String email = scanner.nextLine().trim();
-        System.out.print("Telefone: ");
+        System.out.println("Telefone:");
         String tel = scanner.nextLine().trim();
-        System.out.print("Endereço: ");
+        System.out.println("Endereço:");
         String end = scanner.nextLine().trim();
 
         try {
@@ -193,7 +193,7 @@ public class MenuPrincipal {
     }
 
     private void buscarClienteDocumento() {
-        System.out.print("\nCPF ou CNPJ: ");
+        System.out.println("\nCPF ou CNPJ:");
         String doc = scanner.nextLine().trim();
         try {
             Cliente c = controladorCliente.buscarPorDocumento(doc);
@@ -204,7 +204,7 @@ public class MenuPrincipal {
     }
 
     private void buscarClientePorId() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int id = lerInteiro();
         try {
             Cliente c = controladorCliente.buscarPorId(id);
@@ -215,26 +215,26 @@ public class MenuPrincipal {
     }
 
     private void atualizarCliente() {
-        System.out.print("\nID do cliente para atualizar: ");
+        System.out.println("\nID do cliente para atualizar:");
         int id = lerInteiro();
         try {
             Cliente c = controladorCliente.buscarPorId(id);
             System.out.println("Atual: " + c.exibirResumo());
             System.out.println("Deixe em branco para manter o valor atual.");
 
-            System.out.print("Novo e-mail (" + c.getEmail() + "): ");
+            System.out.println("Novo e-mail (" + c.getEmail() + "):");
             String email = scanner.nextLine().trim();
             if (!email.isEmpty()) {
                 c.setEmail(email);
             }
 
-            System.out.print("Novo telefone (" + c.getTelefone() + "): ");
+            System.out.println("Novo telefone (" + c.getTelefone() + "):");
             String tel = scanner.nextLine().trim();
             if (!tel.isEmpty()) {
                 c.setTelefone(tel);
             }
 
-            System.out.print("Novo endereço (" + c.getEndereco() + "): ");
+            System.out.println("Novo endereço (" + c.getEndereco() + "):");
             String end = scanner.nextLine().trim();
             if (!end.isEmpty()) {
                 c.setEndereco(end);
@@ -248,7 +248,7 @@ public class MenuPrincipal {
     }
 
     private void removerCliente() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int id = lerInteiro();
         if (controladorCliente.removerCliente(id)) {
             System.out.println("Cliente removido.");
@@ -264,7 +264,7 @@ public class MenuPrincipal {
         System.out.println("3 - Listar todos os veículos");
         System.out.println("4 - Remover veículo");
         System.out.println("0 - Voltar");
-        System.out.print("Opção: ");
+        System.out.println("Opção:");
         int op = lerInteiro();
 
         switch (op) {
@@ -289,24 +289,24 @@ public class MenuPrincipal {
     }
 
     private void cadastrarVeiculo() {
-        System.out.print("\nID do cliente proprietário: ");
+        System.out.println("\nID do cliente proprietário:");
         int clienteId = lerInteiro();
 
         try {
             controladorCliente.buscarPorId(clienteId);
-            System.out.print("Marca: ");
+            System.out.println("Marca:");
             String marca = scanner.nextLine().trim();
-            System.out.print("Modelo: ");
+            System.out.println("Modelo:");
             String modelo = scanner.nextLine().trim();
-            System.out.print("Ano: ");
+            System.out.println("Ano:");
             int ano = lerInteiro();
-            System.out.print("Placa: ");
+            System.out.println("Placa:");
             String placa = scanner.nextLine().trim();
-            System.out.print("Renavam: ");
+            System.out.println("Renavam:");
             String renavam = scanner.nextLine().trim();
-            System.out.print("Chassi: ");
+            System.out.println("Chassi:");
             String chassi = scanner.nextLine().trim();
-            System.out.print("Valor na tabela FIPE (R$): ");
+            System.out.println("Valor na tabela FIPE (R$):");
             double fipe = lerDouble();
 
             Veiculo v = new Veiculo(0, clienteId, marca, modelo, ano, placa, renavam, chassi, fipe);
@@ -318,7 +318,7 @@ public class MenuPrincipal {
     }
 
     private void listarVeiculosCliente() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int id = lerInteiro();
         List<Veiculo> lista = controladorCliente.listarVeiculosDoCliente(id);
         if (lista.isEmpty()) {
@@ -344,7 +344,7 @@ public class MenuPrincipal {
     }
 
     private void removerVeiculo() {
-        System.out.print("\nID do veículo: ");
+        System.out.println("\nID do veículo:");
         int id = lerInteiro();
         if (controladorCliente.removerVeiculo(id)) {
             System.out.println("Veículo removido.");
@@ -362,7 +362,7 @@ public class MenuPrincipal {
         System.out.println("5 - Consultar apólice por ID");
         System.out.println("6 - Cancelar apólice");
         System.out.println("0 - Voltar");
-        System.out.print("Opção: ");
+        System.out.println("Opção:");
         int op = lerInteiro();
 
         switch (op) {
@@ -393,7 +393,7 @@ public class MenuPrincipal {
     }
 
     private void emitirApoliceAuto() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int cId = lerInteiro();
         try {
             Cliente cliente = controladorCliente.buscarPorId(cId);
@@ -414,15 +414,15 @@ public class MenuPrincipal {
             }
             Veiculo veiculo = veiculos.get(vEscolha);
 
-            System.out.print("Classe de bônus (0 a 10): ");
+            System.out.println("Classe de bônus (0 a 10):");
             int bonus = lerInteiro();
-            System.out.print("Perfil do condutor (ex: Trabalho, Lazer): ");
+            System.out.println("Perfil do condutor (ex: Trabalho, Lazer):");
             String perfil = scanner.nextLine().trim();
-            System.out.print("Valor da franquia (R$): ");
+            System.out.println("Valor da franquia (R$):");
             double franquia = lerDouble();
-            System.out.print("Número de parcelas (1 a 12): ");
+            System.out.println("Número de parcelas (1 a 12):");
             int parcelas = lerInteiro();
-            System.out.print("Forma de pagamento (BOLETO, CARTAO ou PIX): ");
+            System.out.println("Forma de pagamento (BOLETO, CARTAO ou PIX):");
             String forma = scanner.nextLine().trim();
 
             ApoliceAuto auto = new ApoliceAuto(0, "", cliente, 0.0, franquia,
@@ -443,30 +443,30 @@ public class MenuPrincipal {
     }
 
     private void emitirApoliceResidencial() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int cId = lerInteiro();
         try {
             Cliente cliente = controladorCliente.buscarPorId(cId);
 
-            System.out.print("Endereço do imóvel: ");
+            System.out.println("Endereço do imóvel:");
             String end = scanner.nextLine().trim();
-            System.out.print("CEP: ");
+            System.out.println("CEP:");
             String cep = scanner.nextLine().trim();
-            System.out.print("Cidade: ");
+            System.out.println("Cidade:");
             String cidade = scanner.nextLine().trim();
-            System.out.print("UF: ");
+            System.out.println("UF:");
             String uf = scanner.nextLine().trim();
-            System.out.print("Valor do imóvel (R$): ");
+            System.out.println("Valor do imóvel (R$):");
             double valorMercado = lerDouble();
-            System.out.print("Área construída (m²): ");
+            System.out.println("Área construída (m²):");
             double area = lerDouble();
-            System.out.print("Possui alarme? (S/N): ");
+            System.out.println("Possui alarme? (S/N):");
             boolean alarme = scanner.nextLine().trim().equalsIgnoreCase("S");
-            System.out.print("Valor da franquia (R$): ");
+            System.out.println("Valor da franquia (R$):");
             double franquia = lerDouble();
-            System.out.print("Número de parcelas (1 a 12): ");
+            System.out.println("Número de parcelas (1 a 12):");
             int parcelas = lerInteiro();
-            System.out.print("Forma de pagamento (BOLETO, CARTAO ou PIX): ");
+            System.out.println("Forma de pagamento (BOLETO, CARTAO ou PIX):");
             String forma = scanner.nextLine().trim();
 
             Imovel imovel = new Imovel(1, cId, cep, end, cidade, uf, valorMercado, area, "Alvenaria", alarme);
@@ -488,22 +488,22 @@ public class MenuPrincipal {
     }
 
     private void emitirApoliceVida() {
-        System.out.print("\nID do cliente: ");
+        System.out.println("\nID do cliente:");
         int cId = lerInteiro();
         try {
             Cliente cliente = controladorCliente.buscarPorId(cId);
 
-            System.out.print("Capital segurado (R$): ");
+            System.out.println("Capital segurado (R$):");
             double capital = lerDouble();
-            System.out.print("Idade do segurado: ");
+            System.out.println("Idade do segurado:");
             int idade = lerInteiro();
-            System.out.print("Fumante? (S/N): ");
+            System.out.println("Fumante? (S/N):");
             boolean fumante = scanner.nextLine().trim().equalsIgnoreCase("S");
-            System.out.print("Nome do beneficiário: ");
+            System.out.println("Nome do beneficiário:");
             String benef = scanner.nextLine().trim();
-            System.out.print("Número de parcelas (1 a 12): ");
+            System.out.println("Número de parcelas (1 a 12):");
             int parcelas = lerInteiro();
-            System.out.print("Forma de pagamento (BOLETO, CARTAO ou PIX): ");
+            System.out.println("Forma de pagamento (BOLETO, CARTAO ou PIX):");
             String forma = scanner.nextLine().trim();
 
             ApoliceDeVida vida = new ApoliceDeVida(0, "", cliente, 0.0, 0.0,
@@ -537,7 +537,7 @@ public class MenuPrincipal {
     }
 
     private void detalharApolice() {
-        System.out.print("\nID da apólice: ");
+        System.out.println("\nID da apólice:");
         int id = lerInteiro();
         Apolice a = controladorApolice.buscarApolicePorId(id);
         if (a == null) {
@@ -548,7 +548,7 @@ public class MenuPrincipal {
     }
 
     private void cancelarApolice() {
-        System.out.print("\nID da apólice para cancelar: ");
+        System.out.println("\nID da apólice para cancelar:");
         int id = lerInteiro();
         if (controladorApolice.cancelarApolice(id)) {
             System.out.println("Apólice " + id + " cancelada.");
@@ -564,7 +564,7 @@ public class MenuPrincipal {
         System.out.println("3 - Registrar laudo da perícia");
         System.out.println("4 - Liquidar indenização");
         System.out.println("0 - Voltar");
-        System.out.print("Opção: ");
+        System.out.println("Opção:");
         int op = lerInteiro();
 
         switch (op) {
@@ -589,9 +589,9 @@ public class MenuPrincipal {
     }
 
     private void registrarSinistro() {
-        System.out.print("\nID da apólice: ");
+        System.out.println("\nID da apólice:");
         int apId = lerInteiro();
-        System.out.println("Tipo (1-Colisão, 2-Roubo/Furto, 3-Incêndio, 4-Alagamento, 5-Danos a Terceiros): ");
+        System.out.println("Tipo (1-Colisão, 2-Roubo/Furto, 3-Incêndio, 4-Alagamento, 5-Danos a Terceiros):");
         int tOp = lerInteiro();
         TipoSinistro tipo = TipoSinistro.COLISAO;
         if (tOp == 2) tipo = TipoSinistro.ROUBO_FURTO;
@@ -599,9 +599,9 @@ public class MenuPrincipal {
         else if (tOp == 4) tipo = TipoSinistro.ALAGAMENTO;
         else if (tOp == 5) tipo = TipoSinistro.DANOS_A_TERCEIROS;
 
-        System.out.print("Descrição do ocorrido: ");
+        System.out.println("Descrição do ocorrido:");
         String desc = scanner.nextLine().trim();
-        System.out.print("Prejuízo estimado (R$): ");
+        System.out.println("Prejuízo estimado (R$):");
         double prejuizo = lerDouble();
 
         try {
@@ -627,17 +627,17 @@ public class MenuPrincipal {
     }
 
     private void laudarSinistro() {
-        System.out.print("\nID do sinistro: ");
+        System.out.println("\nID do sinistro:");
         int sId = lerInteiro();
-        System.out.print("Nome do perito: ");
+        System.out.println("Nome do perito:");
         String peritoNome = scanner.nextLine().trim();
-        System.out.print("Registro do perito: ");
+        System.out.println("Registro do perito:");
         String peritoReg = scanner.nextLine().trim();
-        System.out.print("Oficina parceira: ");
+        System.out.println("Oficina parceira:");
         String oficinaNome = scanner.nextLine().trim();
-        System.out.print("Parecer / laudo: ");
+        System.out.println("Parecer / laudo:");
         String laudo = scanner.nextLine().trim();
-        System.out.print("Valor aprovado para reparo (R$): ");
+        System.out.println("Valor aprovado para reparo (R$):");
         double valorAprovado = lerDouble();
 
         Perito perito = new Perito(1, peritoNome, peritoReg, "Vistoria de Sinistros", "(11) 98888-7777", "perito@seguros.com");
@@ -652,7 +652,7 @@ public class MenuPrincipal {
     }
 
     private void liquidarSinistro() {
-        System.out.print("\nID do sinistro para liquidar: ");
+        System.out.println("\nID do sinistro para liquidar:");
         int sId = lerInteiro();
         try {
             controladorApolice.liquidarSinistro(sId);
@@ -668,7 +668,7 @@ public class MenuPrincipal {
         System.out.println("2 - Dar baixa em parcela");
         System.out.println("3 - Listar todos os pagamentos");
         System.out.println("0 - Voltar");
-        System.out.print("Opção: ");
+        System.out.println("Opção:");
         int op = lerInteiro();
 
         switch (op) {
@@ -690,7 +690,7 @@ public class MenuPrincipal {
     }
 
     private void listarPagamentosApolice() {
-        System.out.print("\nID da apólice: ");
+        System.out.println("\nID da apólice:");
         int apId = lerInteiro();
         List<Pagamento> lista = controladorApolice.listarPagamentosPorApolice(apId);
         if (lista.isEmpty()) {
@@ -704,9 +704,9 @@ public class MenuPrincipal {
     }
 
     private void quitarParcela() {
-        System.out.print("\nID da parcela: ");
+        System.out.println("\nID da parcela:");
         int pId = lerInteiro();
-        System.out.print("Forma de pagamento (PIX, CARTAO ou BOLETO): ");
+        System.out.println("Forma de pagamento (PIX, CARTAO ou BOLETO):");
         String forma = scanner.nextLine().trim();
 
         if (controladorApolice.quitarPagamento(pId, forma)) {
@@ -808,7 +808,7 @@ public class MenuPrincipal {
                 String input = scanner.nextLine().trim();
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.print("Digite um número inteiro: ");
+                System.out.println("Digite um número inteiro:");
             }
         }
     }
@@ -819,7 +819,7 @@ public class MenuPrincipal {
                 String input = scanner.nextLine().trim().replace(",", ".");
                 return Double.parseDouble(input);
             } catch (NumberFormatException e) {
-                System.out.print("Digite um valor numérico: ");
+                System.out.println("Digite um valor numérico:");
             }
         }
     }
