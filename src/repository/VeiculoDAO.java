@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class VeiculoDAO implements DAO<Veiculo> {
@@ -47,6 +48,7 @@ public class VeiculoDAO implements DAO<Veiculo> {
     public synchronized Optional<Veiculo> buscarPorPlaca(String placa) {
         if (placa == null) return Optional.empty();
         String limpo = placa.replaceAll("[^0-9a-zA-Z]", "");
+        if (limpo.isEmpty()) return Optional.empty();
         for (Veiculo v : veiculos) {
             if (v.getPlaca() != null && v.getPlaca().replaceAll("[^0-9a-zA-Z]", "").equalsIgnoreCase(limpo)) {
                 return Optional.of(v);
@@ -91,12 +93,23 @@ public class VeiculoDAO implements DAO<Veiculo> {
         return removido;
     }
 
+    private String limparCampo(String valor) {
+        if (valor == null) return "";
+        return valor.replace(";", ",").replace("\r", " ").replace("\n", " ").trim();
+    }
+
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Veiculo v : veiculos) {
-                bw.write(String.format("%d;%d;%s;%s;%d;%s;%s;%s;%.2f",
-                        v.getId(), v.getClienteId(), v.getMarca(), v.getModelo(),
-                        v.getAno(), v.getPlaca(), v.getRenavam(), v.getChassi(), v.getValorFipe()));
+                bw.write(String.format(Locale.US, "%d;%d;%s;%s;%d;%s;%s;%s;%.2f",
+                        v.getId(), v.getClienteId(),
+                        limparCampo(v.getMarca()),
+                        limparCampo(v.getModelo()),
+                        v.getAno(),
+                        limparCampo(v.getPlaca()),
+                        limparCampo(v.getRenavam()),
+                        limparCampo(v.getChassi()),
+                        v.getValorFipe()));
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -110,23 +123,26 @@ public class VeiculoDAO implements DAO<Veiculo> {
             String linha;
             while ((linha = br.readLine()) != null) {
                 if (linha.isBlank()) continue;
-                String[] p = linha.split(";", -1);
-                if (p.length < 9) continue;
-                int id = Integer.parseInt(p[0]);
-                conexao.sincronizarIdMaximo("veiculo", id);
+                try {
+                    String[] p = linha.split(";", -1);
+                    if (p.length < 9) continue;
+                    int id = Integer.parseInt(p[0]);
+                    conexao.sincronizarIdMaximo("veiculo", id);
 
-                Veiculo v = new Veiculo(
-                        id,
-                        Integer.parseInt(p[1]),
-                        p[2],
-                        p[3],
-                        Integer.parseInt(p[4]),
-                        p[5],
-                        p[6],
-                        p[7],
-                        Double.parseDouble(p[8].replace(",", "."))
-                );
-                veiculos.add(v);
+                    Veiculo v = new Veiculo(
+                            id,
+                            Integer.parseInt(p[1]),
+                            p[2],
+                            p[3],
+                            Integer.parseInt(p[4]),
+                            p[5],
+                            p[6],
+                            p[7],
+                            Double.parseDouble(p[8].replace(",", "."))
+                    );
+                    veiculos.add(v);
+                } catch (Exception ignored) {
+                }
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar veículos: " + e.getMessage());

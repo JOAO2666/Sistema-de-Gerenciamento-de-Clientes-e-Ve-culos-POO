@@ -62,7 +62,7 @@ public class ControladorApolice {
 
     public boolean cancelarApolice(int apoliceId) {
         Apolice apolice = apoliceDAO.buscarPorId(apoliceId);
-        if (apolice == null || apolice.getStatus() == StatusApolice.CANCELADA) {
+        if (apolice == null || apolice.getStatus() == StatusApolice.CANCELADA || apolice.getStatus() == StatusApolice.EXPIRADA) {
             return false;
         }
         apolice.setStatus(StatusApolice.CANCELADA);

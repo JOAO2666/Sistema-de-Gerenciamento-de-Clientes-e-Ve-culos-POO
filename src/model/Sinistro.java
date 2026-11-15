@@ -145,8 +145,9 @@ public class Sinistro implements Identificavel {
 
     @Override
     public String toString() {
+        String tipoDesc = tipoSinistro != null ? tipoSinistro.getDescricao() : "-";
         return String.format("ID %d - Protocolo %s | Apólice %d | %s | Prejuízo: R$ %.2f | Status: %s | Indenização: R$ %.2f",
-                id, numeroProtocolo, apoliceId, tipoSinistro.getDescricao(),
+                id, numeroProtocolo, apoliceId, tipoDesc,
                 valorEstimadoPrejuizo, statusSinistro, valorIndenizado);
     }
 }

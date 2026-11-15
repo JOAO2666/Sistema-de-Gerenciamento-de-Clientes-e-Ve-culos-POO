@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class SinistroDAO implements DAO<Sinistro> {
@@ -52,7 +53,7 @@ public class SinistroDAO implements DAO<Sinistro> {
     public synchronized Optional<Sinistro> buscarPorProtocolo(String protocolo) {
         if (protocolo == null) return Optional.empty();
         for (Sinistro s : sinistros) {
-            if (s.getNumeroProtocolo().equalsIgnoreCase(protocolo.trim())) {
+            if (s.getNumeroProtocolo() != null && s.getNumeroProtocolo().equalsIgnoreCase(protocolo.trim())) {
                 return Optional.of(s);
             }
         }
@@ -95,21 +96,26 @@ public class SinistroDAO implements DAO<Sinistro> {
         return removido;
     }
 
+    private String limparCampo(String valor) {
+        if (valor == null) return "";
+        return valor.replace(";", ",").replace("\r", " ").replace("\n", " ").trim();
+    }
+
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Sinistro s : sinistros) {
-                bw.write(String.format("%d;%s;%d;%s;%s;%s;%s;%.2f;%.2f;%s;%s",
+                bw.write(String.format(Locale.US, "%d;%s;%d;%s;%s;%s;%s;%.2f;%.2f;%s;%s",
                         s.getId(),
-                        s.getNumeroProtocolo(),
+                        limparCampo(s.getNumeroProtocolo()),
                         s.getApoliceId(),
                         s.getDataOcorrencia() != null ? s.getDataOcorrencia().toString() : "",
                         s.getDataRegistro() != null ? s.getDataRegistro().toString() : "",
                         s.getTipoSinistro() != null ? s.getTipoSinistro().name() : "COLISAO",
-                        s.getDescricao() != null ? s.getDescricao().replace(";", ",") : "",
+                        limparCampo(s.getDescricao()),
                         s.getValorEstimadoPrejuizo(),
                         s.getValorIndenizado(),
-                        s.getStatusSinistro(),
-                        s.getLaudoPericial() != null ? s.getLaudoPericial().replace(";", ",") : ""));
+                        limparCampo(s.getStatusSinistro()),
+                        limparCampo(s.getLaudoPericial())));
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -123,30 +129,33 @@ public class SinistroDAO implements DAO<Sinistro> {
             String linha;
             while ((linha = br.readLine()) != null) {
                 if (linha.isBlank()) continue;
-                String[] p = linha.split(";", -1);
-                if (p.length < 11) continue;
-                int id = Integer.parseInt(p[0]);
-                conexao.sincronizarIdMaximo("sinistro", id);
+                try {
+                    String[] p = linha.split(";", -1);
+                    if (p.length < 11) continue;
+                    int id = Integer.parseInt(p[0]);
+                    conexao.sincronizarIdMaximo("sinistro", id);
 
-                LocalDate ocorrencia = !p[3].isEmpty() ? LocalDate.parse(p[3]) : LocalDate.now();
-                LocalDate registro = !p[4].isEmpty() ? LocalDate.parse(p[4]) : LocalDate.now();
-                TipoSinistro tipo = TipoSinistro.valueOf(p[5]);
+                    LocalDate ocorrencia = !p[3].isEmpty() ? LocalDate.parse(p[3]) : LocalDate.now();
+                    LocalDate registro = !p[4].isEmpty() ? LocalDate.parse(p[4]) : LocalDate.now();
+                    TipoSinistro tipo = TipoSinistro.valueOf(p[5]);
 
-                Sinistro sin = new Sinistro(
-                        id,
-                        p[1],
-                        Integer.parseInt(p[2]),
-                        ocorrencia,
-                        tipo,
-                        p[6],
-                        Double.parseDouble(p[7].replace(",", "."))
-                );
-                sin.setDataRegistro(registro);
-                sin.setValorIndenizado(Double.parseDouble(p[8].replace(",", ".")));
-                sin.setStatusSinistro(p[9]);
-                sin.setLaudoPericial(p[10]);
+                    Sinistro sin = new Sinistro(
+                            id,
+                            p[1],
+                            Integer.parseInt(p[2]),
+                            ocorrencia,
+                            tipo,
+                            p[6],
+                            Double.parseDouble(p[7].replace(",", "."))
+                    );
+                    sin.setDataRegistro(registro);
+                    sin.setValorIndenizado(Double.parseDouble(p[8].replace(",", ".")));
+                    sin.setStatusSinistro(p[9]);
+                    sin.setLaudoPericial(p[10]);
 
-                sinistros.add(sin);
+                    sinistros.add(sin);
+                } catch (Exception ignored) {
+                }
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar sinistros: " + e.getMessage());

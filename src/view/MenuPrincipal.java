@@ -8,6 +8,7 @@ import exception.SinistroJaRegistradoException;
 import exception.ValorPremioInvalidoException;
 import model.*;
 import model.enums.EstadoCivil;
+import model.enums.StatusApolice;
 import model.enums.TipoCobertura;
 import model.enums.TipoSinistro;
 
@@ -242,7 +243,7 @@ public class MenuPrincipal {
 
             controladorCliente.atualizarCliente(c);
             System.out.println("Cadastro atualizado.");
-        } catch (ClienteNaoEncontradoException e) {
+        } catch (ClienteNaoEncontradoException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -250,6 +251,12 @@ public class MenuPrincipal {
     private void removerCliente() {
         System.out.println("\nID do cliente:");
         int id = lerInteiro();
+        for (Apolice a : controladorApolice.listarApolicesDoCliente(id)) {
+            if (a.getStatus() == StatusApolice.ATIVA) {
+                System.out.println("Cliente possui apólice ativa vinculada. Cancele as apólices antes de remover.");
+                return;
+            }
+        }
         if (controladorCliente.removerCliente(id)) {
             System.out.println("Cliente removido.");
         } else {
@@ -346,6 +353,15 @@ public class MenuPrincipal {
     private void removerVeiculo() {
         System.out.println("\nID do veículo:");
         int id = lerInteiro();
+        for (Apolice a : controladorApolice.listarTodasApolices()) {
+            if (a instanceof ApoliceAuto && a.getStatus() == StatusApolice.ATIVA) {
+                ApoliceAuto auto = (ApoliceAuto) a;
+                if (auto.getVeiculo() != null && auto.getVeiculo().getId() == id) {
+                    System.out.println("Veículo vinculado a uma apólice ativa. Cancele a apólice antes de remover.");
+                    return;
+                }
+            }
+        }
         if (controladorCliente.removerVeiculo(id)) {
             System.out.println("Veículo removido.");
         } else {
@@ -553,7 +569,7 @@ public class MenuPrincipal {
         if (controladorApolice.cancelarApolice(id)) {
             System.out.println("Apólice " + id + " cancelada.");
         } else {
-            System.out.println("Apólice não encontrada ou já cancelada.");
+            System.out.println("Apólice não encontrada, já cancelada ou expirada.");
         }
     }
 
@@ -804,6 +820,9 @@ public class MenuPrincipal {
 
     private int lerInteiro() {
         while (true) {
+            if (!scanner.hasNextLine()) {
+                return 0;
+            }
             try {
                 String input = scanner.nextLine().trim();
                 return Integer.parseInt(input);
@@ -815,9 +834,16 @@ public class MenuPrincipal {
 
     private double lerDouble() {
         while (true) {
+            if (!scanner.hasNextLine()) {
+                return 0.0;
+            }
             try {
                 String input = scanner.nextLine().trim().replace(",", ".");
-                return Double.parseDouble(input);
+                double valor = Double.parseDouble(input);
+                if (Double.isFinite(valor)) {
+                    return valor;
+                }
+                System.out.println("Digite um valor numérico válido:");
             } catch (NumberFormatException e) {
                 System.out.println("Digite um valor numérico:");
             }

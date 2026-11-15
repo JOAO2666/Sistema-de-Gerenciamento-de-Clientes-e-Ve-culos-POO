@@ -22,12 +22,18 @@ public class CalculadoraDePremioService implements ICalculadoraDePremio {
         double custoCoberturas = 0.0;
         if (apolice.getCoberturas() != null) {
             for (Cobertura cob : apolice.getCoberturas()) {
+                if (!Double.isFinite(cob.getValorLimite()) || cob.getValorLimite() < 0) {
+                    throw new ValorPremioInvalidoException("Valor limite de cobertura inválido: " + cob.getValorLimite());
+                }
                 custoCoberturas += (cob.getValorLimite() * 0.012);
             }
         }
 
         double subtotal = premioBase + custoCoberturas;
-        if (percentualDesconto > 0.0 && percentualDesconto < 100.0) {
+        if (!Double.isFinite(percentualDesconto) || percentualDesconto < 0.0 || percentualDesconto >= 100.0) {
+            throw new ValorPremioInvalidoException("Percentual de desconto inválido: " + percentualDesconto);
+        }
+        if (percentualDesconto > 0.0) {
             subtotal = subtotal * (1.0 - (percentualDesconto / 100.0));
         }
 
@@ -36,7 +42,7 @@ public class CalculadoraDePremioService implements ICalculadoraDePremio {
 
         premioFinal = Math.round(premioFinal * 100.0) / 100.0;
 
-        if (premioFinal <= 0.0) {
+        if (!Double.isFinite(premioFinal) || premioFinal <= 0.0) {
             throw new ValorPremioInvalidoException("O prêmio calculado resultou em valor inválido: R$ " + premioFinal);
         }
 

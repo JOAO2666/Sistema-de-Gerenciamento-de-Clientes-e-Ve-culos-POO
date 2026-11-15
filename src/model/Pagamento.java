@@ -109,14 +109,15 @@ public class Pagamento implements Identificavel {
     public void registrarQuitacao(String forma) {
         registrarQuitacao();
         if (forma != null && !forma.isBlank()) {
-            this.formaPagamento = forma;
+            this.formaPagamento = forma.trim().toUpperCase();
         }
     }
 
     @Override
     public String toString() {
+        String forma = (formaPagamento != null && !formaPagamento.isBlank()) ? formaPagamento : "-";
         return String.format("ID %d | Apólice %d | Parcela %d/%d | R$ %.2f | Venc: %s | %s (%s)",
                 id, apoliceId, numeroParcela, totalParcelas, valor,
-                dataVencimento, (pago ? "Pago em " + dataPagamento : "Pendente"), formaPagamento);
+                dataVencimento, (pago ? "Pago em " + dataPagamento : "Pendente"), forma);
     }
 }

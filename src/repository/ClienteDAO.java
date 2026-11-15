@@ -50,8 +50,11 @@ public class ClienteDAO implements DAO<Cliente> {
     public synchronized Optional<Cliente> buscarPorDocumento(String documento) {
         if (documento == null) return Optional.empty();
         String limpo = documento.replaceAll("[^0-9a-zA-Z]", "");
+        if (limpo.isEmpty()) return Optional.empty();
         for (Cliente c : clientes) {
-            String docCliente = c.getDocumentoPrincipal().replaceAll("[^0-9a-zA-Z]", "");
+            String doc = c.getDocumentoPrincipal();
+            if (doc == null) continue;
+            String docCliente = doc.replaceAll("[^0-9a-zA-Z]", "");
             if (docCliente.equalsIgnoreCase(limpo)) {
                 return Optional.of(c);
             }
@@ -85,21 +88,40 @@ public class ClienteDAO implements DAO<Cliente> {
         return removido;
     }
 
+    private String limparCampo(String valor) {
+        if (valor == null) return "";
+        return valor.replace(";", ",").replace("\r", " ").replace("\n", " ").trim();
+    }
+
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Cliente c : clientes) {
                 if (c instanceof PessoaFisica) {
                     PessoaFisica pf = (PessoaFisica) c;
                     bw.write(String.format("PF;%d;%s;%s;%s;%s;%s;%s;%s;%s;%s",
-                            pf.getId(), pf.getNome(), pf.getEmail(), pf.getTelefone(), pf.getEndereco(),
-                            pf.getCpf(), pf.getRg(), pf.getDataNascimento(), pf.getSexo(),
+                            pf.getId(),
+                            limparCampo(pf.getNome()),
+                            limparCampo(pf.getEmail()),
+                            limparCampo(pf.getTelefone()),
+                            limparCampo(pf.getEndereco()),
+                            limparCampo(pf.getCpf()),
+                            limparCampo(pf.getRg()),
+                            limparCampo(pf.getDataNascimento()),
+                            limparCampo(pf.getSexo()),
                             pf.getEstadoCivil() != null ? pf.getEstadoCivil().name() : "SOLTEIRO"));
                 } else if (c instanceof PessoaJuridica) {
                     PessoaJuridica pj = (PessoaJuridica) c;
                     bw.write(String.format("PJ;%d;%s;%s;%s;%s;%s;%s;%s;%s;%s",
-                            pj.getId(), pj.getNome(), pj.getEmail(), pj.getTelefone(), pj.getEndereco(),
-                            pj.getCnpj(), pj.getRazaoSocial(), pj.getInscricaoEstadual(),
-                            pj.getNomeFantasia(), pj.getRepresentanteLegal()));
+                            pj.getId(),
+                            limparCampo(pj.getNome()),
+                            limparCampo(pj.getEmail()),
+                            limparCampo(pj.getTelefone()),
+                            limparCampo(pj.getEndereco()),
+                            limparCampo(pj.getCnpj()),
+                            limparCampo(pj.getRazaoSocial()),
+                            limparCampo(pj.getInscricaoEstadual()),
+                            limparCampo(pj.getNomeFantasia()),
+                            limparCampo(pj.getRepresentanteLegal())));
                 }
                 bw.newLine();
             }
@@ -114,19 +136,22 @@ public class ClienteDAO implements DAO<Cliente> {
             String linha;
             while ((linha = br.readLine()) != null) {
                 if (linha.isBlank()) continue;
-                String[] p = linha.split(";", -1);
-                if (p.length < 11) continue;
-                int id = Integer.parseInt(p[1]);
-                conexao.sincronizarIdMaximo("cliente", id);
+                try {
+                    String[] p = linha.split(";", -1);
+                    if (p.length < 11) continue;
+                    int id = Integer.parseInt(p[1]);
+                    conexao.sincronizarIdMaximo("cliente", id);
 
-                if ("PF".equals(p[0])) {
-                    EstadoCivil ec = EstadoCivil.SOLTEIRO;
-                    try { ec = EstadoCivil.valueOf(p[10]); } catch (Exception ignored) {}
-                    PessoaFisica pf = new PessoaFisica(id, p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], ec);
-                    clientes.add(pf);
-                } else if ("PJ".equals(p[0])) {
-                    PessoaJuridica pj = new PessoaJuridica(id, p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10]);
-                    clientes.add(pj);
+                    if ("PF".equals(p[0])) {
+                        EstadoCivil ec = EstadoCivil.SOLTEIRO;
+                        try { ec = EstadoCivil.valueOf(p[10]); } catch (Exception ignored) {}
+                        PessoaFisica pf = new PessoaFisica(id, p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], ec);
+                        clientes.add(pf);
+                    } else if ("PJ".equals(p[0])) {
+                        PessoaJuridica pj = new PessoaJuridica(id, p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10]);
+                        clientes.add(pj);
+                    }
+                } catch (Exception ignored) {
                 }
             }
         } catch (Exception e) {

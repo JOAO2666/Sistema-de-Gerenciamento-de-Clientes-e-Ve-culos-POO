@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PagamentoDAO implements DAO<Pagamento> {
     private final List<Pagamento> pagamentos;
@@ -80,10 +81,15 @@ public class PagamentoDAO implements DAO<Pagamento> {
         return removido;
     }
 
+    private String limparCampo(String valor) {
+        if (valor == null) return "";
+        return valor.replace(";", ",").replace("\r", " ").replace("\n", " ").trim();
+    }
+
     private synchronized void salvarDados() {
         try (BufferedWriter bw = Files.newBufferedWriter(arquivoDados)) {
             for (Pagamento p : pagamentos) {
-                bw.write(String.format("%d;%d;%d;%d;%.2f;%s;%s;%b;%s",
+                bw.write(String.format(Locale.US, "%d;%d;%d;%d;%.2f;%s;%s;%b;%s",
                         p.getId(),
                         p.getApoliceId(),
                         p.getNumeroParcela(),
@@ -92,7 +98,7 @@ public class PagamentoDAO implements DAO<Pagamento> {
                         p.getDataVencimento() != null ? p.getDataVencimento().toString() : "",
                         p.getDataPagamento() != null ? p.getDataPagamento().toString() : "",
                         p.isPago(),
-                        p.getFormaPagamento() != null ? p.getFormaPagamento() : ""));
+                        limparCampo(p.getFormaPagamento())));
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -106,26 +112,29 @@ public class PagamentoDAO implements DAO<Pagamento> {
             String linha;
             while ((linha = br.readLine()) != null) {
                 if (linha.isBlank()) continue;
-                String[] p = linha.split(";", -1);
-                if (p.length < 9) continue;
-                int id = Integer.parseInt(p[0]);
-                conexao.sincronizarIdMaximo("pagamento", id);
+                try {
+                    String[] p = linha.split(";", -1);
+                    if (p.length < 9) continue;
+                    int id = Integer.parseInt(p[0]);
+                    conexao.sincronizarIdMaximo("pagamento", id);
 
-                LocalDate venc = !p[5].isEmpty() ? LocalDate.parse(p[5]) : null;
-                LocalDate pagto = !p[6].isEmpty() ? LocalDate.parse(p[6]) : null;
+                    LocalDate venc = !p[5].isEmpty() ? LocalDate.parse(p[5]) : null;
+                    LocalDate pagto = !p[6].isEmpty() ? LocalDate.parse(p[6]) : null;
 
-                Pagamento pag = new Pagamento(
-                        id,
-                        Integer.parseInt(p[1]),
-                        Integer.parseInt(p[2]),
-                        Integer.parseInt(p[3]),
-                        Double.parseDouble(p[4].replace(",", ".")),
-                        venc,
-                        p[8]
-                );
-                pag.setDataPagamento(pagto);
-                pag.setPago(Boolean.parseBoolean(p[7]));
-                pagamentos.add(pag);
+                    Pagamento pag = new Pagamento(
+                            id,
+                            Integer.parseInt(p[1]),
+                            Integer.parseInt(p[2]),
+                            Integer.parseInt(p[3]),
+                            Double.parseDouble(p[4].replace(",", ".")),
+                            venc,
+                            p[8]
+                    );
+                    pag.setDataPagamento(pagto);
+                    pag.setPago(Boolean.parseBoolean(p[7]));
+                    pagamentos.add(pag);
+                } catch (Exception ignored) {
+                }
             }
         } catch (Exception e) {
             System.err.println("Erro ao carregar pagamentos: " + e.getMessage());

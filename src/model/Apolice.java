@@ -104,7 +104,9 @@ public abstract class Apolice implements Identificavel {
     }
 
     public void setStatus(StatusApolice status) {
-        this.status = status;
+        if (status != null) {
+            this.status = status;
+        }
     }
 
     public List<Cobertura> getCoberturas() {
@@ -167,8 +169,9 @@ public abstract class Apolice implements Identificavel {
     @Override
     public String toString() {
         String clienteNome = (cliente != null) ? cliente.getNome() : "Não informado";
+        String statusDesc = (status != null) ? status.getDescricao() : "-";
         return String.format("ID %d - [%s] N° %s | Segurado: %s | Prêmio: R$ %.2f | Vigência: %s a %s | %s",
                 id, getTipoApolice(), numeroApolice, clienteNome, valorPremio,
-                dataInicioVigencia, dataFimVigencia, status.getDescricao());
+                dataInicioVigencia, dataFimVigencia, statusDesc);
     }
 }

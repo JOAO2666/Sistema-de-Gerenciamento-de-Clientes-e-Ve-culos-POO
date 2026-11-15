@@ -74,7 +74,8 @@ public class Cobertura implements Identificavel {
 
     @Override
     public String toString() {
+        String tipoDesc = tipo != null ? tipo.getDescricao() : "-";
         return String.format("Cobertura: %s (%s) | Limite: R$ %.2f | Franquia: R$ %.2f",
-                nome, tipo.getDescricao(), valorLimite, valorFranquia);
+                nome, tipoDesc, valorLimite, valorFranquia);
     }
 }

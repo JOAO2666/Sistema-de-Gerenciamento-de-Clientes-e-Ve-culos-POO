@@ -35,6 +35,8 @@ public class TestePOO {
         testarExcecaoApoliceVencida();
         testarExcecaoSinistroDuplicado();
         testarExcecaoValorPremioInvalido();
+        testarFluxoCompletoSinistroEValidacoes();
+        testarCadastrosDuplicadosEPersistencia();
 
         System.out.printf("\nResultado: %d de %d testes passaram.\n", testesPassados, testesTotais);
 
@@ -133,12 +135,27 @@ public class TestePOO {
                 LocalDate.now(), LocalDate.now().plusYears(1), v, 1, "Lazer");
 
         try {
-            Apolice emitida = emissor.emitirApolice(proposta, 5, "BOLETO");
+            boolean recusouParcelaInvalida = false;
+            try {
+                emissor.emitirApolice(proposta, 0, "PIX");
+            } catch (IllegalArgumentException e) {
+                recusouParcelaInvalida = true;
+            }
+            verificar(recusouParcelaInvalida, "Recusa emissao com quantidade de parcelas fora de 1..12");
+
+            Apolice emitida = emissor.emitirApolice(proposta, 5, "   ");
             verificar(emitida.getStatus() == StatusApolice.ATIVA, "Status da apolice emitida passa para ATIVA");
             verificar(emitida.getId() > 0, "Apolice salva com ID gerado");
 
             List<Pagamento> parcelas = pagDao.listarPorApolice(emitida.getId());
             verificar(parcelas.size() == 5, "Geracao de 5 parcelas no PagamentoDAO");
+            verificar("PIX".equals(parcelas.get(0).getFormaPagamento()), "Forma de pagamento em branco assume PIX");
+
+            double somaParcelas = 0.0;
+            for (Pagamento p : parcelas) {
+                somaParcelas += p.getValor();
+            }
+            verificar(Math.abs(somaParcelas - emitida.getValorPremio()) < 0.01, "Soma das parcelas corresponde ao premio total");
 
             Pagamento primeiraParcela = parcelas.get(0);
             primeiraParcela.registrarQuitacao();
@@ -243,22 +260,230 @@ public class TestePOO {
     }
 
     private static void testarExcecaoValorPremioInvalido() {
-        System.out.println("\n-- Teste 7: Excecao ValorPremioInvalidoException --");
+        System.out.println("\n-- Teste 7: Excecao ValorPremioInvalidoException e validacoes de proposta --");
 
         Cliente pf = new PessoaFisica(20, "Lucas", "lucas@email.com", "119999", "Rua G",
                 "777.888.999-00", "RG-1122", "05/05/1990", "M", EstadoCivil.SOLTEIRO);
 
+        ValidadorDePropostaService validador = new ValidadorDePropostaService();
+        CalculadoraDePremioService calc = new CalculadoraDePremioService();
+
         ApoliceDeVida vidaInvalida = new ApoliceDeVida(4, "AP-INV", pf, 0.0, 0.0,
                 LocalDate.now(), LocalDate.now().plusYears(1), 0.0, false, 25);
 
-        ValidadorDePropostaService validador = new ValidadorDePropostaService();
-        boolean lancou = false;
+        boolean lancouVida = false;
         try {
             validador.validarProposta(vidaInvalida);
         } catch (ValorPremioInvalidoException e) {
-            lancou = true;
+            lancouVida = true;
         } catch (ClienteNaoEncontradoException ignored) {
         }
-        verificar(lancou, "ValorPremioInvalidoException lancada quando capital segurado e zerado");
+        verificar(lancouVida, "ValorPremioInvalidoException lancada quando capital segurado e zerado");
+
+        Veiculo veiculoZero = new Veiculo(1, 20, "Fiat", "Uno", 2020, "TST-0001", "111", "CH1", 0.0);
+        ApoliceAuto autoFipeZero = new ApoliceAuto(5, "AP-AUTO-INV", pf, 0.0, -50.0,
+                LocalDate.now(), LocalDate.now().plusYears(1), veiculoZero, 0, "Padrao");
+
+        boolean lancouFranquia = false;
+        try {
+            validador.validarProposta(autoFipeZero);
+        } catch (ValorPremioInvalidoException e) {
+            lancouFranquia = true;
+        } catch (ClienteNaoEncontradoException ignored) {
+        }
+        verificar(lancouFranquia, "ValorPremioInvalidoException lancada para franquia negativa");
+
+        autoFipeZero.setValorFranquia(1500.0);
+        boolean lancouFipe = false;
+        try {
+            validador.validarProposta(autoFipeZero);
+        } catch (ValorPremioInvalidoException e) {
+            lancouFipe = true;
+        } catch (ClienteNaoEncontradoException ignored) {
+        }
+        verificar(lancouFipe, "ValorPremioInvalidoException lancada quando valor FIPE e zero");
+
+        Imovel imovelInvalido = new Imovel(1, 20, "01001-000", "Rua Teste", "SP", "SP", 0.0, 0.0, "Alvenaria", false);
+        ApoliceResidencial resInvalida = new ApoliceResidencial(6, "AP-RES-INV", pf, 0.0, 1000.0,
+                LocalDate.now(), LocalDate.now().plusYears(1), imovelInvalido, "Casa", false);
+        boolean lancouImovel = false;
+        try {
+            validador.validarProposta(resInvalida);
+        } catch (ValorPremioInvalidoException e) {
+            lancouImovel = true;
+        } catch (ClienteNaoEncontradoException ignored) {
+        }
+        verificar(lancouImovel, "ValorPremioInvalidoException lancada quando valor de mercado do imovel e zero");
+
+        ApoliceDeVida vidaValida = new ApoliceDeVida(7, "AP-DESC", pf, 0.0, 0.0,
+                LocalDate.now(), LocalDate.now().plusYears(1), 100000.0, false, 30);
+        boolean lancouDescontoNegativo = false;
+        boolean lancouDescontoCem = false;
+        try {
+            calc.calcularPremio(vidaValida, -10.0);
+        } catch (ValorPremioInvalidoException e) {
+            lancouDescontoNegativo = true;
+        }
+        try {
+            calc.calcularPremio(vidaValida, 100.0);
+        } catch (ValorPremioInvalidoException e) {
+            lancouDescontoCem = true;
+        }
+        verificar(lancouDescontoNegativo && lancouDescontoCem,
+                "Calculadora recusa descontos negativos ou iguais/maiores que 100%");
+    }
+
+    private static void testarFluxoCompletoSinistroEValidacoes() {
+        System.out.println("\n-- Teste 8: Ciclo de sinistro, laudo pericial e bloqueios --");
+
+        ClienteDAO cliDao = new ClienteDAO();
+        VeiculoDAO veiDao = new VeiculoDAO();
+        ApoliceDAO apDao = new ApoliceDAO(cliDao, veiDao);
+        SinistroDAO sinDao = new SinistroDAO();
+        ProcessadorDeSinistroService proc = new ProcessadorDeSinistroService(apDao, sinDao);
+
+        PessoaFisica pf = new PessoaFisica(0, "Cliente Sinistro", "sin@email.com", "1191111", "Rua H",
+                "888.999.000-11", "RG-2233", "03/03/1991", "M", EstadoCivil.CASADO);
+        cliDao.salvar(pf);
+
+        ApoliceAuto apCancelada = new ApoliceAuto(0, "AP-CANC", pf, 1800.0, 2000.0,
+                LocalDate.now(), LocalDate.now().plusYears(1), null, 0, "Padrao");
+        apCancelada.setStatus(StatusApolice.CANCELADA);
+        apDao.salvar(apCancelada);
+
+        ApoliceAuto apAtiva = new ApoliceAuto(0, "AP-SIN-OK", pf, 2000.0, 1500.0,
+                LocalDate.now(), LocalDate.now().plusYears(1), null, 0, "Padrao");
+        apAtiva.setStatus(StatusApolice.ATIVA);
+        apDao.salvar(apAtiva);
+
+        Sinistro s1 = null;
+        Sinistro s2 = null;
+        try {
+            boolean recusouCancelada = false;
+            try {
+                proc.registrarSinistro(apCancelada.getId(), LocalDate.now(), TipoSinistro.COLISAO, "Batida", 3000.0);
+            } catch (IllegalStateException e) {
+                recusouCancelada = true;
+            }
+            verificar(recusouCancelada, "Recusa abertura de sinistro em apolice cancelada");
+
+            boolean recusouPrejuizoZero = false;
+            try {
+                proc.registrarSinistro(apAtiva.getId(), LocalDate.now(), TipoSinistro.COLISAO, "Sem prejuizo", 0.0);
+            } catch (IllegalArgumentException e) {
+                recusouPrejuizoZero = true;
+            }
+            verificar(recusouPrejuizoZero, "Recusa sinistro com prejuizo menor ou igual a zero");
+
+            s1 = proc.registrarSinistro(apAtiva.getId(), LocalDate.now(), TipoSinistro.COLISAO, "Batida traseira", 8000.0);
+            s2 = proc.registrarSinistro(apAtiva.getId(), LocalDate.now(), TipoSinistro.ROUBO_FURTO, "Estepe furtado", 2500.0);
+            verificar(!s1.getNumeroProtocolo().equals(s2.getNumeroProtocolo()),
+                    "Protocolos sequenciais nao colidem em chamadas consecutivas");
+
+            boolean recusouLiquidarSemLaudo = false;
+            try {
+                proc.liquidarSinistro(s1.getId());
+            } catch (IllegalStateException e) {
+                recusouLiquidarSemLaudo = true;
+            }
+            verificar(recusouLiquidarSemLaudo, "Recusa liquidar sinistro antes da aprovacao da pericia");
+
+            boolean recusouValorNegativo = false;
+            Perito perito = new Perito(1, "Carlos Perito", "CREA-SP 1234", "Auto", "11999990000", "perito@email.com");
+            OficinaParceira oficina = new OficinaParceira(1, "Oficina Central", "11.111.111/0001-11", "Av 1", "113333", "Joao", 10.0);
+            try {
+                proc.analisarELaudarSinistro(s1.getId(), perito, oficina, "Laudo negativo", -100.0);
+            } catch (IllegalArgumentException e) {
+                recusouValorNegativo = true;
+            }
+            verificar(recusouValorNegativo, "Recusa laudo com valor aprovado negativo");
+
+            proc.analisarELaudarSinistro(s1.getId(), perito, oficina, "Substituicao parachoque", 5000.0);
+            verificar("APROVADO".equals(s1.getStatusSinistro()) && Math.abs(s1.getValorIndenizado() - 3500.0) < 0.01,
+                    "Laudo desconta a franquia corretamente e aprova sinistro");
+
+            proc.liquidarSinistro(s1.getId());
+            verificar("PAGO_CONCLUIDO".equals(s1.getStatusSinistro()), "Liquidacao conclui pagamento apos laudo aprovado");
+
+            boolean recusouDuplaLiquidacao = false;
+            try {
+                proc.liquidarSinistro(s1.getId());
+            } catch (IllegalStateException e) {
+                recusouDuplaLiquidacao = true;
+            }
+            verificar(recusouDuplaLiquidacao, "Recusa nova liquidacao em sinistro ja pago");
+        } catch (Exception e) {
+            verificar(false, "Erro inesperado no fluxo de sinistro: " + e.getMessage());
+        } finally {
+            if (s1 != null) sinDao.deletar(s1.getId());
+            if (s2 != null) sinDao.deletar(s2.getId());
+            apDao.deletar(apCancelada.getId());
+            apDao.deletar(apAtiva.getId());
+            cliDao.deletar(pf.getId());
+        }
+    }
+
+    private static void testarCadastrosDuplicadosEPersistencia() {
+        System.out.println("\n-- Teste 9: Bloqueio de duplicidade e persistencia com caracteres especiais --");
+
+        ClienteDAO cliDao = new ClienteDAO();
+        VeiculoDAO veiDao = new VeiculoDAO();
+        ControladorCliente ctrl = new ControladorCliente(cliDao, veiDao);
+
+        PessoaFisica pf = new PessoaFisica(0, "Ana;Maria", "ana.p@email.com", "1190000", "Rua X; Bloco B\nApto 1",
+                "999.888.777-66", "RG-9988", "04/04/1994", "F", EstadoCivil.CASADO);
+        PessoaFisica pfDuplicada = new PessoaFisica(0, "Ana Outra", "ana2@email.com", "1190000", "Rua Y",
+                "99988877766", "RG-0001", "04/04/1994", "F", EstadoCivil.SOLTEIRO);
+
+        Veiculo v = null;
+        try {
+            ctrl.cadastrarCliente(pf);
+
+            boolean recusouDocDuplicado = false;
+            try {
+                ctrl.cadastrarCliente(pfDuplicada);
+            } catch (IllegalArgumentException e) {
+                recusouDocDuplicado = true;
+            }
+            verificar(recusouDocDuplicado, "ControladorCliente bloqueia CPF duplicado mesmo sem pontuacao");
+
+            v = new Veiculo(0, pf.getId(), "VW", "Polo;Highline", 2022, "TST-9Z99", "55555", "CH555", 85000.0);
+            ctrl.cadastrarVeiculo(v);
+
+            boolean recusouPlacaDuplicada = false;
+            try {
+                ctrl.cadastrarVeiculo(new Veiculo(0, pf.getId(), "VW", "Polo", 2022, "tst9z99", "66666", "CH666", 85000.0));
+            } catch (IllegalArgumentException e) {
+                recusouPlacaDuplicada = true;
+            }
+            verificar(recusouPlacaDuplicada, "ControladorCliente bloqueia placa duplicada");
+
+            boolean recusouAnoInvalido = false;
+            try {
+                ctrl.cadastrarVeiculo(new Veiculo(0, pf.getId(), "VW", "Gol", 1800, "OLD-0001", "777", "CH7", 10000.0));
+            } catch (IllegalArgumentException e) {
+                recusouAnoInvalido = true;
+            }
+            verificar(recusouAnoInvalido, "ControladorCliente bloqueia veiculo com ano invalido");
+
+            ClienteDAO cliRecarregado = new ClienteDAO();
+            VeiculoDAO veiRecarregado = new VeiculoDAO();
+
+            Cliente clienteLido = cliRecarregado.buscarPorId(pf.getId());
+            Veiculo veiculoLido = veiRecarregado.buscarPorId(v.getId());
+
+            verificar(clienteLido instanceof PessoaFisica
+                            && ((PessoaFisica) clienteLido).getEstadoCivil() == EstadoCivil.CASADO
+                            && !clienteLido.getNome().contains(";"),
+                    "Cliente com ponto e virgula no nome e quebra no endereco recarrega sem deslocar colunas");
+            verificar(veiculoLido != null && veiculoLido.getModelo().contains("Polo,Highline")
+                            && Math.abs(veiculoLido.getValorFipe() - 85000.0) < 0.01,
+                    "Veiculo com caractere especial recarrega com valor FIPE preservado");
+        } catch (Exception e) {
+            verificar(false, "Erro inesperado no teste de persistencia: " + e.getMessage());
+        } finally {
+            if (v != null) veiDao.deletar(v.getId());
+            cliDao.deletar(pf.getId());
+        }
     }
 }

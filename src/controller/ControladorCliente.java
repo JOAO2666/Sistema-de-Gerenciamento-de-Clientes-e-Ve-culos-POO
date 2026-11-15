@@ -6,6 +6,7 @@ import model.Veiculo;
 import repository.ClienteDAO;
 import repository.VeiculoDAO;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +26,12 @@ public class ControladorCliente {
         if (cliente.getNome() == null || cliente.getNome().isBlank()) {
             throw new IllegalArgumentException("O nome do cliente é obrigatório.");
         }
-        if (cliente.getDocumentoPrincipal() == null || cliente.getDocumentoPrincipal().isBlank()) {
+        String doc = cliente.getDocumentoPrincipal();
+        if (doc == null || doc.replaceAll("[^0-9a-zA-Z]", "").isEmpty()) {
             throw new IllegalArgumentException("O CPF/CNPJ do cliente é obrigatório.");
+        }
+        if (clienteDAO.buscarPorDocumento(doc).isPresent()) {
+            throw new IllegalArgumentException("Já existe um cliente cadastrado com o CPF/CNPJ informado.");
         }
         clienteDAO.salvar(cliente);
     }
@@ -52,6 +57,9 @@ public class ControladorCliente {
     }
 
     public void atualizarCliente(Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("Dados do cliente inválidos.");
+        }
         clienteDAO.atualizar(cliente);
     }
 
@@ -70,6 +78,25 @@ public class ControladorCliente {
             throw new IllegalArgumentException("Veículo não pode ser nulo.");
         }
         buscarPorId(veiculo.getClienteId());
+        if (veiculo.getMarca() == null || veiculo.getMarca().isBlank()) {
+            throw new IllegalArgumentException("A marca do veículo é obrigatória.");
+        }
+        if (veiculo.getModelo() == null || veiculo.getModelo().isBlank()) {
+            throw new IllegalArgumentException("O modelo do veículo é obrigatório.");
+        }
+        int anoMax = LocalDate.now().getYear() + 1;
+        if (veiculo.getAno() < 1900 || veiculo.getAno() > anoMax) {
+            throw new IllegalArgumentException("Ano do veículo inválido (1900 a " + anoMax + ").");
+        }
+        if (veiculo.getPlaca() == null || veiculo.getPlaca().replaceAll("[^0-9a-zA-Z]", "").isEmpty()) {
+            throw new IllegalArgumentException("A placa do veículo é obrigatória.");
+        }
+        if (veiculoDAO.buscarPorPlaca(veiculo.getPlaca()).isPresent()) {
+            throw new IllegalArgumentException("Já existe um veículo cadastrado com a placa informada.");
+        }
+        if (!Double.isFinite(veiculo.getValorFipe()) || veiculo.getValorFipe() <= 0) {
+            throw new IllegalArgumentException("O valor FIPE do veículo deve ser maior que zero.");
+        }
         veiculoDAO.salvar(veiculo);
     }
 

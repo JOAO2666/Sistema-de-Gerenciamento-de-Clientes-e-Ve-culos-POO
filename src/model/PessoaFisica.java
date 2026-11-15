@@ -60,7 +60,7 @@ public class PessoaFisica extends Cliente {
     }
 
     public void setEstadoCivil(EstadoCivil estadoCivil) {
-        this.estadoCivil = estadoCivil;
+        this.estadoCivil = estadoCivil != null ? estadoCivil : EstadoCivil.SOLTEIRO;
     }
 
     @Override
@@ -75,7 +75,8 @@ public class PessoaFisica extends Cliente {
 
     @Override
     public String exibirResumo() {
+        String ecDesc = estadoCivil != null ? estadoCivil.getDescricao() : "-";
         return String.format("ID %d - PF: %s | CPF: %s | Nasc: %s | Sexo: %s | Est. Civil: %s | Tel: %s | %s",
-                getId(), getNome(), cpf, dataNascimento, sexo, estadoCivil.getDescricao(), getTelefone(), getEmail());
+                getId(), getNome(), cpf, dataNascimento, sexo, ecDesc, getTelefone(), getEmail());
     }
 }
