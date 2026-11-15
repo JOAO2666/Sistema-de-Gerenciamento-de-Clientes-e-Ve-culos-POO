@@ -22,6 +22,12 @@ public class ControladorCliente {
         if (cliente == null) {
             throw new IllegalArgumentException("Dados do cliente não podem ser nulos.");
         }
+        if (cliente.getNome() == null || cliente.getNome().isBlank()) {
+            throw new IllegalArgumentException("O nome do cliente é obrigatório.");
+        }
+        if (cliente.getDocumentoPrincipal() == null || cliente.getDocumentoPrincipal().isBlank()) {
+            throw new IllegalArgumentException("O CPF/CNPJ do cliente é obrigatório.");
+        }
         clienteDAO.salvar(cliente);
     }
 
@@ -50,7 +56,13 @@ public class ControladorCliente {
     }
 
     public boolean removerCliente(int id) {
-        return clienteDAO.deletar(id);
+        boolean removido = clienteDAO.deletar(id);
+        if (removido) {
+            for (Veiculo v : veiculoDAO.listarPorCliente(id)) {
+                veiculoDAO.deletar(v.getId());
+            }
+        }
+        return removido;
     }
 
     public void cadastrarVeiculo(Veiculo veiculo) throws ClienteNaoEncontradoException {
@@ -59,6 +71,10 @@ public class ControladorCliente {
         }
         buscarPorId(veiculo.getClienteId());
         veiculoDAO.salvar(veiculo);
+    }
+
+    public boolean removerVeiculo(int veiculoId) {
+        return veiculoDAO.deletar(veiculoId);
     }
 
     public List<Veiculo> listarVeiculosDoCliente(int clienteId) {

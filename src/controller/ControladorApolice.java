@@ -5,6 +5,7 @@ import exception.ClienteNaoEncontradoException;
 import exception.SinistroJaRegistradoException;
 import exception.ValorPremioInvalidoException;
 import model.*;
+import model.enums.StatusApolice;
 import model.enums.TipoSinistro;
 import repository.ApoliceDAO;
 import repository.PagamentoDAO;
@@ -59,6 +60,16 @@ public class ControladorApolice {
         return apoliceDAO.listarPorCliente(clienteId);
     }
 
+    public boolean cancelarApolice(int apoliceId) {
+        Apolice apolice = apoliceDAO.buscarPorId(apoliceId);
+        if (apolice == null || apolice.getStatus() == StatusApolice.CANCELADA) {
+            return false;
+        }
+        apolice.setStatus(StatusApolice.CANCELADA);
+        apoliceDAO.atualizar(apolice);
+        return true;
+    }
+
     public Sinistro registrarSinistro(int apoliceId, LocalDate data, TipoSinistro tipo,
                                       String descricao, double prejuizo)
             throws ApoliceVencidaException, SinistroJaRegistradoException {
@@ -75,6 +86,10 @@ public class ControladorApolice {
 
     public void laudarSinistro(int sinistroId, Perito perito, OficinaParceira oficina, String laudo, double valor) {
         sinistroService.analisarELaudarSinistro(sinistroId, perito, oficina, laudo, valor);
+    }
+
+    public void liquidarSinistro(int sinistroId) {
+        sinistroService.liquidarSinistro(sinistroId);
     }
 
     public List<Pagamento> listarPagamentosPorApolice(int apoliceId) {

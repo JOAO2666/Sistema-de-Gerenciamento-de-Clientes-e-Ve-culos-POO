@@ -79,7 +79,9 @@ public class MenuPrincipal {
         System.out.println("2 - Cadastrar Pessoa Jurídica");
         System.out.println("3 - Listar clientes");
         System.out.println("4 - Buscar por CPF/CNPJ");
-        System.out.println("5 - Remover cliente");
+        System.out.println("5 - Buscar por ID");
+        System.out.println("6 - Atualizar cliente");
+        System.out.println("7 - Remover cliente");
         System.out.println("0 - Voltar");
         System.out.print("Opção: ");
         int op = lerInteiro();
@@ -98,9 +100,18 @@ public class MenuPrincipal {
                 buscarClienteDocumento();
                 break;
             case 5:
+                buscarClientePorId();
+                break;
+            case 6:
+                atualizarCliente();
+                break;
+            case 7:
                 removerCliente();
                 break;
+            case 0:
+                break;
             default:
+                System.out.println("Opção inválida.");
                 break;
         }
     }
@@ -192,6 +203,50 @@ public class MenuPrincipal {
         }
     }
 
+    private void buscarClientePorId() {
+        System.out.print("\nID do cliente: ");
+        int id = lerInteiro();
+        try {
+            Cliente c = controladorCliente.buscarPorId(id);
+            System.out.println(c.exibirResumo());
+        } catch (ClienteNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void atualizarCliente() {
+        System.out.print("\nID do cliente para atualizar: ");
+        int id = lerInteiro();
+        try {
+            Cliente c = controladorCliente.buscarPorId(id);
+            System.out.println("Atual: " + c.exibirResumo());
+            System.out.println("Deixe em branco para manter o valor atual.");
+
+            System.out.print("Novo e-mail (" + c.getEmail() + "): ");
+            String email = scanner.nextLine().trim();
+            if (!email.isEmpty()) {
+                c.setEmail(email);
+            }
+
+            System.out.print("Novo telefone (" + c.getTelefone() + "): ");
+            String tel = scanner.nextLine().trim();
+            if (!tel.isEmpty()) {
+                c.setTelefone(tel);
+            }
+
+            System.out.print("Novo endereço (" + c.getEndereco() + "): ");
+            String end = scanner.nextLine().trim();
+            if (!end.isEmpty()) {
+                c.setEndereco(end);
+            }
+
+            controladorCliente.atualizarCliente(c);
+            System.out.println("Cadastro atualizado.");
+        } catch (ClienteNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void removerCliente() {
         System.out.print("\nID do cliente: ");
         int id = lerInteiro();
@@ -207,6 +262,7 @@ public class MenuPrincipal {
         System.out.println("1 - Cadastrar veículo");
         System.out.println("2 - Listar veículos de um cliente");
         System.out.println("3 - Listar todos os veículos");
+        System.out.println("4 - Remover veículo");
         System.out.println("0 - Voltar");
         System.out.print("Opção: ");
         int op = lerInteiro();
@@ -221,7 +277,13 @@ public class MenuPrincipal {
             case 3:
                 listarTodosVeiculos();
                 break;
+            case 4:
+                removerVeiculo();
+                break;
+            case 0:
+                break;
             default:
+                System.out.println("Opção inválida.");
                 break;
         }
     }
@@ -281,6 +343,16 @@ public class MenuPrincipal {
         }
     }
 
+    private void removerVeiculo() {
+        System.out.print("\nID do veículo: ");
+        int id = lerInteiro();
+        if (controladorCliente.removerVeiculo(id)) {
+            System.out.println("Veículo removido.");
+        } else {
+            System.out.println("Veículo não encontrado.");
+        }
+    }
+
     private void menuApolices() {
         System.out.println("\n--- Apólices ---");
         System.out.println("1 - Emitir apólice de automóvel");
@@ -288,6 +360,7 @@ public class MenuPrincipal {
         System.out.println("3 - Emitir apólice de vida");
         System.out.println("4 - Listar apólices");
         System.out.println("5 - Consultar apólice por ID");
+        System.out.println("6 - Cancelar apólice");
         System.out.println("0 - Voltar");
         System.out.print("Opção: ");
         int op = lerInteiro();
@@ -308,7 +381,13 @@ public class MenuPrincipal {
             case 5:
                 detalharApolice();
                 break;
+            case 6:
+                cancelarApolice();
+                break;
+            case 0:
+                break;
             default:
+                System.out.println("Opção inválida.");
                 break;
         }
     }
@@ -468,11 +547,22 @@ public class MenuPrincipal {
         a.exibirDetalhesApolice();
     }
 
+    private void cancelarApolice() {
+        System.out.print("\nID da apólice para cancelar: ");
+        int id = lerInteiro();
+        if (controladorApolice.cancelarApolice(id)) {
+            System.out.println("Apólice " + id + " cancelada.");
+        } else {
+            System.out.println("Apólice não encontrada ou já cancelada.");
+        }
+    }
+
     private void menuSinistros() {
         System.out.println("\n--- Sinistros ---");
         System.out.println("1 - Registrar sinistro");
         System.out.println("2 - Listar sinistros");
         System.out.println("3 - Registrar laudo da perícia");
+        System.out.println("4 - Liquidar indenização");
         System.out.println("0 - Voltar");
         System.out.print("Opção: ");
         int op = lerInteiro();
@@ -487,7 +577,13 @@ public class MenuPrincipal {
             case 3:
                 laudarSinistro();
                 break;
+            case 4:
+                liquidarSinistro();
+                break;
+            case 0:
+                break;
             default:
+                System.out.println("Opção inválida.");
                 break;
         }
     }
@@ -555,6 +651,17 @@ public class MenuPrincipal {
         }
     }
 
+    private void liquidarSinistro() {
+        System.out.print("\nID do sinistro para liquidar: ");
+        int sId = lerInteiro();
+        try {
+            controladorApolice.liquidarSinistro(sId);
+            System.out.println("Sinistro " + sId + " liquidado (pago).");
+        } catch (Exception e) {
+            System.out.println("Erro ao liquidar sinistro: " + e.getMessage());
+        }
+    }
+
     private void menuPagamentos() {
         System.out.println("\n--- Pagamentos ---");
         System.out.println("1 - Listar parcelas de uma apólice");
@@ -574,7 +681,10 @@ public class MenuPrincipal {
             case 3:
                 listarTodosPagamentos();
                 break;
+            case 0:
+                break;
             default:
+                System.out.println("Opção inválida.");
                 break;
         }
     }
@@ -650,6 +760,11 @@ public class MenuPrincipal {
     }
 
     private void carregarDadosExemplo() {
+        if (!controladorCliente.listarTodosClientes().isEmpty()) {
+            System.out.println("\nJá existem dados cadastrados no sistema.");
+            return;
+        }
+
         PessoaFisica pf = new PessoaFisica(0, "João Silva", "joao.silva@email.com", "(11) 98765-4321",
                 "Rua das Flores, 123", "123.456.789-00", "MG-12.345.678", "15/05/1990", "M", EstadoCivil.CASADO);
         controladorCliente.cadastrarCliente(pf);
